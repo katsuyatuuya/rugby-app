@@ -1,4 +1,4 @@
-const CACHE = 'tag-rugby-v2';
+const CACHE = 'tag-rugby-v3';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './favicon.svg'];
 
 self.addEventListener('install', e => {

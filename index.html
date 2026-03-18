@@ -1189,16 +1189,19 @@ function saveSlogan() {
 
 // Policy
 function openPolicyModal(id) {
-  const el = document.getElementById;
-  el('policyEditId').value = id || '';
-  el('policyModalTitle').textContent = id ? '指導方針を編集' : '指導方針を追加';
+  document.getElementById('policyEditId').value = id || '';
+  document.getElementById('policyModalTitle').textContent = id ? '指導方針を編集' : '指導方針を追加';
   if (id) {
     const p = data.policies.find(x => x.id === id);
-    el('policyName').value = p.name; el('policyDetail').value = p.detail;
-    el('policyTag').value = p.tag; el('policyColor').value = p.color;
+    document.getElementById('policyName').value = p.name;
+    document.getElementById('policyDetail').value = p.detail;
+    document.getElementById('policyTag').value = p.tag;
+    document.getElementById('policyColor').value = p.color;
   } else {
-    el('policyName').value = ''; el('policyDetail').value = '';
-    el('policyTag').value = ''; el('policyColor').value = 'orange';
+    document.getElementById('policyName').value = '';
+    document.getElementById('policyDetail').value = '';
+    document.getElementById('policyTag').value = '';
+    document.getElementById('policyColor').value = 'orange';
   }
   openModal('policyModal');
 }
