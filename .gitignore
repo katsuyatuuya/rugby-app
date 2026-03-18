@@ -3,4 +3,5 @@ Desktop.ini
 *.tmp
 *.bak
 *.log
+.claude/
 

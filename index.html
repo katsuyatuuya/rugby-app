@@ -159,6 +159,22 @@ textarea { resize: vertical; min-height: 80px; }
 .skill-name { font-size: 14px; font-weight: 600; color: var(--gray-700); min-width: 80px; }
 .date-chip { display: inline-flex; align-items: center; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1.5px solid var(--gray-200); background: white; color: var(--gray-600); margin: 0 4px 4px 0; transition: all 0.1s; }
 .date-chip.active { background: var(--red); border-color: var(--red); color: white; }
+/* MATCHES */
+.match-item { display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--gray-100); }
+.match-item:last-child { border-bottom:none; }
+.match-result { width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:white;flex-shrink:0; }
+.match-win { background:var(--green); }
+.match-lose { background:var(--red); }
+.match-draw { background:var(--gray-500); }
+/* GROWTH CHART */
+.growth-row { display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--gray-100); }
+.growth-row:last-child { border-bottom:none; }
+.growth-bar-bg { flex:1;background:var(--gray-100);border-radius:4px;height:8px;overflow:hidden; }
+.growth-bar { height:8px;border-radius:4px;transition:width 0.4s ease; }
+/* PRACTICE FILTER */
+.lib-filter-chip { display:inline-flex;align-items:center;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid var(--gray-200);background:white;color:var(--gray-600);margin:0 4px 6px 0;transition:all 0.1s;white-space:nowrap; }
+.lib-filter-chip.active { background:var(--red);border-color:var(--red);color:white; }
+button:disabled, button[disabled] { opacity:0.3;cursor:default; }
 </style>
 </head>
 <body>
@@ -167,8 +183,13 @@ textarea { resize: vertical; min-height: 80px; }
     <!-- HOME -->
     <div class="screen active" id="screen-home">
       <div class="home-header">
-        <div class="home-title">TAG RUGBY 2026</div>
-        <div class="home-subtitle">新チーム運営計画</div>
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;">
+          <div>
+            <div class="home-title" id="appTitleDisplay">TAG RUGBY 2026</div>
+            <div class="home-subtitle" id="appSubtitleDisplay">新チーム運営計画</div>
+          </div>
+          <button onclick="openAppTitleModal()" style="background:rgba(255,255,255,0.15);border:none;color:rgba(255,255,255,0.85);padding:6px 10px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0;margin-top:2px;">✏️ 編集</button>
+        </div>
         <div class="home-slogan" id="sloganDisplay" onclick="editSlogan()">
           <span id="sloganText">全員で前に出る、全員で獲りに行く</span>
           <span style="opacity:0.7;font-size:12px;">✏️</span>
@@ -204,13 +225,21 @@ textarea { resize: vertical; min-height: 80px; }
         <button class="btn btn-secondary btn-sm" onclick="openPhaseModal()">＋ 追加</button>
       </div>
       <div class="card" style="padding:8px 16px;margin-bottom:12px;" id="phaseList"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 16px 8px;">
+        <div class="section-title">試合記録</div>
+        <button class="btn btn-secondary btn-sm" onclick="openMatchModal()">＋ 追加</button>
+      </div>
+      <div class="card" style="padding:8px 16px;margin-bottom:12px;" id="matchList"></div>
     </div>
     <!-- MEMBERS -->
     <div class="screen" id="screen-members">
       <div class="page-header" style="padding-top:calc(var(--safe-top) + 16px);">
         <div style="display:flex;align-items:center;justify-content:space-between;">
           <div><div class="page-title">部員管理</div><div class="page-subtitle" id="memberCount">9名登録中</div></div>
-          <button class="btn btn-primary btn-sm" onclick="openMemberModal()">＋ 追加</button>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-secondary btn-sm" onclick="advanceGrades()">📅 進級</button>
+            <button class="btn btn-primary btn-sm" onclick="openMemberModal()">＋ 追加</button>
+          </div>
         </div>
       </div>
       <div id="memberList" style="padding-bottom:16px;"></div>
@@ -268,13 +297,19 @@ textarea { resize: vertical; min-height: 80px; }
       <div class="page-header" style="padding-top:calc(var(--safe-top) + 16px);">
         <div style="display:flex;align-items:center;justify-content:space-between;">
           <div><div class="page-title">評価</div><div class="page-subtitle" id="evalDateLabel">日付を選択してください</div></div>
-          <button class="btn btn-primary btn-sm" onclick="saveEval()">保存</button>
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-secondary btn-sm" id="teamSummaryBtn" onclick="toggleTeamSummary()">🏉 チーム分析</button>
+            <button class="btn btn-secondary btn-sm" id="growthChartBtn" onclick="toggleGrowthChart()">📊 成長グラフ</button>
+            <button class="btn btn-primary btn-sm" id="evalSaveBtn" onclick="saveEval()">保存</button>
+          </div>
         </div>
         <div style="margin-top:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
           <input type="date" id="evalDateInput" style="width:auto;flex-shrink:0;" onchange="onEvalDateChange()">
         </div>
         <div id="evalDateChips" style="margin-top:10px;display:flex;flex-wrap:wrap;gap:4px;"></div>
       </div>
+      <div id="teamSummaryView" style="display:none;padding:12px 0 0;"></div>
+      <div id="growthChartView" style="display:none;padding:12px 0 0;"></div>
       <div id="evalList" style="padding:12px 0;"></div>
     </div>
   </div>
@@ -405,8 +440,15 @@ textarea { resize: vertical; min-height: 80px; }
     <div class="form-group"><label class="form-label">時間（分）</label><input type="text" id="libTime" placeholder="例：15"></div>
     <div class="form-group"><label class="form-label">区分</label>
       <select id="libCategory">
-        <option value="集合">集合</option><option value="W-UP">W-UP</option><option value="基礎">基礎</option><option value="基礎①">基礎①</option><option value="基礎②">基礎②</option>
-        <option value="戦術">戦術</option><option value="戦術①">戦術①</option><option value="戦術②">戦術②</option><option value="実戦">実戦</option><option value="個人">個人</option><option value="整理">整理</option>
+        <option value="集合">集合</option>
+        <option value="W-UP">W-UP</option>
+        <option value="キャッチ">キャッチ</option>
+        <option value="パス">パス</option>
+        <option value="タテ突破">タテ突破</option>
+        <option value="フォロー">フォロー</option>
+        <option value="守備">守備</option>
+        <option value="実戦">実戦</option>
+        <option value="整理">整理</option>
       </select>
     </div>
     <div class="form-group"><label class="form-label">内容</label><textarea id="libContent" placeholder="内容を入力"></textarea></div>
@@ -426,10 +468,14 @@ textarea { resize: vertical; min-height: 80px; }
     <input type="hidden" id="practiceEditId">
     <div class="form-group"><label class="form-label">タイトル</label><input type="text" id="practiceTitle" placeholder="例：初回練習"></div>
     <div class="form-group"><label class="form-label">日付</label><input type="date" id="practiceDate"></div>
+    <div class="form-group">
+      <label class="form-label">カテゴリで絞り込み</label>
+      <div id="libFilterChips" style="display:flex;flex-wrap:wrap;"></div>
+    </div>
     <div class="form-group"><label class="form-label">メニューを選択（タップで追加）</label>
       <div id="libPickerList" style="max-height:200px;overflow-y:auto;border:1.5px solid var(--gray-200);border-radius:10px;"></div>
     </div>
-    <div class="form-group"><label class="form-label">選択済みメニュー（ドラッグで並べ替え）</label>
+    <div class="form-group"><label class="form-label">選択済みメニュー（▲▼で並び替え）</label>
       <div id="selectedMenuList" style="min-height:60px;border:1.5px solid var(--gray-200);border-radius:10px;padding:8px;"></div>
     </div>
     <div class="modal-actions">
@@ -445,7 +491,10 @@ textarea { resize: vertical; min-height: 80px; }
     <div class="modal-handle"></div>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
       <div class="modal-title" style="margin:0;" id="detailTitle"></div>
-      <button class="btn btn-secondary btn-sm" onclick="closeModal('practiceDetailModal')">閉じる</button>
+      <div style="display:flex;gap:6px;">
+        <button class="btn btn-secondary btn-sm" onclick="copyCurrentPractice()">📋 コピー</button>
+        <button class="btn btn-secondary btn-sm" onclick="closeModal('practiceDetailModal')">閉じる</button>
+      </div>
     </div>
     <div id="detailDate" style="font-size:13px;color:var(--gray-500);margin-bottom:12px;"></div>
     <button class="btn btn-primary" style="width:100%;margin-bottom:16px;font-size:17px;padding:14px;" id="timerStartBtn" onclick="startPracticeTimer()">▶ 練習スタート</button>
@@ -508,6 +557,40 @@ textarea { resize: vertical; min-height: 80px; }
   </div>
 </div>
 
+<!-- App Title Modal -->
+<div class="modal-overlay" id="appTitleModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">アプリタイトル編集</div>
+    <div class="form-group"><label class="form-label">タイトル（例: TAG RUGBY 2027）</label><input type="text" id="appTitleInput" placeholder="TAG RUGBY 2026"></div>
+    <div class="form-group"><label class="form-label">サブタイトル（例: 新チーム運営計画）</label><input type="text" id="appSubtitleInput" placeholder="新チーム運営計画"></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('appTitleModal')">キャンセル</button>
+      <button class="btn btn-primary" onclick="saveAppTitle()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- Match Modal -->
+<div class="modal-overlay" id="matchModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="matchModalTitle">試合を追加</div>
+    <input type="hidden" id="matchEditId">
+    <div class="form-group"><label class="form-label">日付</label><input type="date" id="matchDate"></div>
+    <div class="form-group"><label class="form-label">対戦相手</label><input type="text" id="matchOpponent" placeholder="例：〇〇FC"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="form-group"><label class="form-label">自チーム得点</label><input type="text" id="matchOurScore" placeholder="3" inputmode="numeric"></div>
+      <div class="form-group"><label class="form-label">相手得点</label><input type="text" id="matchTheirScore" placeholder="1" inputmode="numeric"></div>
+    </div>
+    <div class="form-group"><label class="form-label">メモ・振り返り</label><textarea id="matchNotes" placeholder="試合の振り返り・良かった点・反省点" style="min-height:80px;"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('matchModal')">キャンセル</button>
+      <button class="btn btn-primary" onclick="saveMatch()">保存</button>
+    </div>
+  </div>
+</div>
+
 <!-- Toast -->
 <div class="toast" id="toast">✓ 保存しました</div>
 <input type="file" id="backupImportInput" accept=".json,application/json" style="display:none;" onchange="importBackup(event)">
@@ -554,7 +637,127 @@ const DEFAULT_PHASES = [
 ];
 
 const DEFAULT_LIBRARY = [
-  {id:'l1',time:'10',category:'集合',name:'挨拶・自己紹介',content:'全員で円になり名前・好きなもの発表 / コーチから今年の目標発表',tip:'1年生が緊張しないよう2年生から先に'},
+  /* ===== 集合 ===== */
+  {id:'l1',time:'5',category:'集合',name:'挨拶・今日のテーマ宣言',
+   content:'全員で円になる → コーチが今日の練習テーマを1つ発表 → 全員で声に出して3回復唱。',
+   tip:'テーマは必ず1つだけ。「今日はフォロー！」シンプルに。複数テーマは子どもが混乱する。'},
+  {id:'l2',time:'5',category:'集合',name:'前回の振り返りクイズ',
+   content:'「前回何を練習した？」「どんなプレーができた？」をクイズ形式で確認 → 正解したらグータッチ。',
+   tip:'記憶の定着と連続性。前回の成功体験を思い出させてから今日の練習へ入る。'},
+  {id:'l3',time:'10',category:'集合',name:'初回挨拶・自己紹介',
+   content:'全員で円になり名前と好きなもの発表 → コーチから今年のチーム目標発表 → 全員でチームコール。',
+   tip:'1年生が緊張しないよう2年生から先に。コーチも自己紹介する。チームの一体感づくりが最優先。'},
+  /* ===== W-UP ===== */
+  {id:'l4',time:'10',category:'W-UP',name:'タグしっぽ取り鬼ごっこ',
+   content:'全員タグをつける → 自分のタグを守りながら相手のタグを取る。一定時間内に多く取った人が勝ち。',
+   tip:'タグを取る＝ディフェンスの基本動作。全力で楽しむ習慣をつける。審判なしで自己申告。'},
+  {id:'l5',time:'10',category:'W-UP',name:'ボール持ち鬼ごっこ',
+   content:'ボールを持ちながら鬼ごっこ。タグを取られたらボールを手放す → 鬼の数が増える変形ルールも可。',
+   tip:'ボールを持ちながら走る感覚を楽しく習得。ボールへの愛着・握り方が自然に身につく。'},
+  {id:'l6',time:'10',category:'W-UP',name:'宝運びゲーム',
+   content:'中央に置いたビブス（宝）を自陣に運ぶチーム対抗戦。タグを取られたら宝を中央に返す。',
+   tip:'ボールキャリーの感覚に直結。チームで「パスして！」の声がかけあえる習慣がつく。'},
+  {id:'l7',time:'10',category:'W-UP',name:'スペース確認鬼ごっこ',
+   content:'コーチが「〇番コーン！」と叫んだらそのコーンをタッチ → 戻る。鬼はタグを取る。',
+   tip:'周囲確認＆瞬発力。試合中の「スペースを見る・走り込む」感覚に直結する。'},
+  {id:'l8',time:'5',category:'W-UP',name:'動的ストレッチ＋動作確認',
+   content:'①腿上げジョグ20m ②バック走20m ③サイドステップ20m ④スキップ20m。最後にボール投げキャッチ×10。',
+   tip:'練習前の体温め。強度は軽めに。最後のキャッチで「手の形・胸の前」を毎回チェック。'},
+  /* ===== キャッチ ===== */
+  {id:'l9',time:'10',category:'キャッチ',name:'おにぎりキャッチ基礎',
+   content:'①コーチ投げ→両手でキャッチ×10球 ②ペア対面3mキャッチ×20往復 ③ペア対面5mキャッチ×20往復。',
+   tip:'「おにぎりの手」で胸の前で迎えに行く。目をボールから離さない。落としてもすぐ次へ。'},
+  {id:'l10',time:'10',category:'キャッチ',name:'動きながらキャッチ',
+   content:'①歩きながら横パスキャッチ ②ジョグしながら ③ランしながら。各10回ずつ距離を徐々に延ばす。',
+   tip:'止まって取るより動きながら取る方が試合に近い。体の前で迎える意識。スピードに合わせてキャッチ地点を調整。'},
+  {id:'l11',time:'10',category:'キャッチ',name:'ノッコン撲滅ドリル',
+   content:'コーチが様々な方向・速度で投げる → キャッチ。落としたら即座にもう1球。連続10球ノッコンなしを目標に。',
+   tip:'落とすことへの恐れをなくす。「落としても大丈夫、すぐ次」の姿勢。プレッシャー下でのキャッチ精度向上。'},
+  {id:'l12',time:'15',category:'キャッチ',name:'3人トライアングル＆動きキャッチ',
+   content:'①3人三角形でパス×20回（時計・反時計） ②2人1組でジョグしながら横パスキャッチ × ③コーチ高投げを走ってキャッチ。',
+   tip:'キャッチしたら即次の人を見る習慣。フォローのポジショニング感覚に通じる。'},
+  /* ===== パス ===== */
+  {id:'l13',time:'10',category:'パス',name:'スローフォワード防止ドリル',
+   content:'横一列3人で走りながらパス。コーチが「前！」「OK！」と判定。スローFしたら戻って再スタート。',
+   tip:'後ろに投げる意識。肘を引いて体を相手に向けてリリース。判定は優しく、慣れたら厳しく。'},
+  {id:'l14',time:'10',category:'パス',name:'的当てパス精度練習',
+   content:'5m先のコーン的を設置 → パスで的を倒す。1人10球。倒した数を記録 → 自己ベスト更新を目標に。',
+   tip:'目標を定めて投げる精度向上。競争形式で楽しい。手首のスナップを意識させる。'},
+  {id:'l15',time:'15',category:'パス',name:'飛ばしパス入門',
+   content:'①隣にパス5分 ②1人飛ばして投げる（スキップパス）5分 ③コーチが中間で防御役に入る実戦的飛ばしパス5分。',
+   tip:'大きく振り抜く。受け手は声を出して「ここ！」。スキップパスは試合の最大の武器になる。'},
+  {id:'l16',time:'10',category:'パス',name:'タグ直前パス（オフロード）ドリル',
+   content:'2人1組。1人がボールで前進 → コーチがタグを取る → 即座にパス → フォローが受ける。5本連続を目標に。',
+   tip:'タグを取られる前に「パス先を見る・手を準備」。「タグ！」の声で習慣化。オフロードの土台。'},
+  {id:'l17',time:'15',category:'パス',name:'パス総合ドリル',
+   content:'①的当て5分 ②横一列ランパス5分 ③飛ばしパス5分。コーチがスローFを逐一チェック。',
+   tip:'3種類を止まらず続ける。最後に「今日で1番うまかったパス」を聞く。自己認識力を育てる。'},
+  /* ===== タテ突破 ===== */
+  {id:'l18',time:'10',category:'タテ突破',name:'タテ走りドリル（1対0）',
+   content:'コーチが「Go！」→ ボールを持ちタテに10m走り込んでトライ×10本。コーンジグザグ後の直線突破も可。',
+   tip:'まずタテに走る癖をつける。躊躇しない・止まらない。フェイントより先にタテ。'},
+  {id:'l19',time:'10',category:'タテ突破',name:'1対1タテ突破（タグ取り）',
+   content:'5m×5mのエリアで1対1。攻撃側はタテに突破、守備側はタグを取る。3本勝負×全員ローテーション。',
+   tip:'守備のいないスペースへ一歩踏み込む。低重心・ドライブする姿勢を褒める。'},
+  {id:'l20',time:'15',category:'タテ突破',name:'2対1判断ドリル',
+   content:'2対1の数的優位。①歩きながら ②ジョグ ③ランスピードで。「タテかパスか」を声で宣言してから実行。',
+   tip:'まずタテ！守備が来たらパス。この順番を体に染み込ませる。声で判断を宣言させることで思考が整理される。'},
+  {id:'l21',time:'15',category:'タテ突破',name:'3対2連携ドリル',
+   content:'3対2のシチュエーション。タテ→フォロー→フォローの流れ。1本成功したら攻守交替。5本先取チームの勝ち。',
+   tip:'フォロー役は「後ろ斜め1歩」の距離を保つ。声で「ここ！」と知らせることが絶対条件。'},
+  /* ===== フォロー ===== */
+  {id:'l22',time:'10',category:'フォロー',name:'フォローポジション確認',
+   content:'1人がボールを持って走る → フォロー2人が正しい位置（後ろ斜め1歩）に入れているか静止確認 → ジョグ → ラン。',
+   tip:'静止→歩き→ジョグ→ランの順で段階的に習得。「後ろ1歩」の距離感が命。初回は定規で実測しても良い。'},
+  {id:'l23',time:'10',category:'フォロー',name:'フォローラン（3人1組）',
+   content:'3人1組で走る。先頭がボールを持ち直進 → 後ろ2人は常に後ろ斜め1歩の位置でついていく → タグで即パス。',
+   tip:'声を出し続ける。「ここ！」「後ろ！」。声がなければボールは来ない。コーチは声が出た瞬間を全力で褒める。'},
+  {id:'l24',time:'15',category:'フォロー',name:'オフロード＆フォロー実践',
+   content:'3人1組。タグを取られる直前にオフロードパス → フォローが受ける → フォローのフォローへ。5本連続トライを目標。',
+   tip:'止まらずつなぐのがタグラグビーの核心。「タグの前にパス！」を合言葉に。成功したら全員でハイタッチ。'},
+  {id:'l25',time:'15',category:'フォロー',name:'オフロード縛りミニゲーム',
+   content:'タグを取られたら必ずオフロードしなければならないルールでミニゲーム。止まったら相手ボールに。',
+   tip:'フォロー意識が一気に高まる。声を出さないとパスができない。試合で最も使う状況を毎回作る。'},
+  /* ===== 守備 ===== */
+  {id:'l26',time:'10',category:'守備',name:'ディフェンスライン前進',
+   content:'4人横一列。コーチの笛で全員一斉に前進。全員が同じラインを保てているかコーチが確認 → 再スタート。',
+   tip:'「前！」「揃えて！」の声が重要。バラバラに出ると抜かれる。声を出しながら全員で動く意識を作る。'},
+  {id:'l27',time:'10',category:'守備',name:'1対1タグ取り集中練習',
+   content:'守備役が攻撃側に正面から入ってタグを取る。5m×5mエリア。10本中何本取れるか記録する。',
+   tip:'腰を低く・正面に入る・手をタグの位置に準備。「取れた本数」を記録して上達を実感させる。'},
+  {id:'l28',time:'10',category:'守備',name:'マーク確認ドリル',
+   content:'「マークを決めてそこから離れない」練習。攻撃側が動いても守備側は自分のマークをずっとマーク。',
+   tip:'目線：ボールでなく自分のマーク。ボールは視野の端で捉える。これが試合で崩れない守備の基本。'},
+  {id:'l29',time:'15',category:'守備',name:'守備特化ミニゲーム',
+   content:'3対4（守備多め）。守備チームがタグを何本取れるか競争。1本取るたびに「1点！」と全員で数える。',
+   tip:'タグを取ることを楽しい体験に変える。「守備はつまらない」をなくす。記録更新で盛り上がる。'},
+  /* ===== 実戦 ===== */
+  {id:'l30',time:'15',category:'実戦',name:'ミニゲーム3対3',
+   content:'15m×10mコート。3対3。タグ5回でターンオーバー。コーチは良いプレーを即座に声で褒める。',
+   tip:'少人数でボールが回りやすい。フォローとオフロードが頻繁に出る。テンポを止めない。'},
+  {id:'l31',time:'20',category:'実戦',name:'ミニゲーム4対4（標準）',
+   content:'20m×12mコート。4対4。タグ5回制。コーチは実況しながら良いプレーを褒める。',
+   tip:'止まったらすぐリスタート。コーチは止めずに声かけのみ。テンポが試合感覚を作る。'},
+  {id:'l32',time:'15',category:'実戦',name:'制約ゲーム（パス2回以上）',
+   content:'トライ前に必ず2回以上パスをつながないと得点にならないルール。',
+   tip:'フォロー意識・飛ばしパスが自然に生まれる。「次の次を見る」習慣がつく。低学年でも分かりやすい。'},
+  {id:'l33',time:'15',category:'実戦',name:'制約ゲーム（全員タッチ）',
+   content:'攻撃側は全員が1回はボールを触らないとトライできないルール。',
+   tip:'「ボールを持っていない選手が動く」意識が高まる。全員が関与する喜びが生まれる。'},
+  {id:'l34',time:'15',category:'実戦',name:'接戦演習（残り1分・1点差）',
+   content:'残り1分・1点差という場面設定でゲーム。コーチが「残り1分！」「あと1トライ！」と演出する。',
+   tip:'プレッシャー下での判断力を鍛える。楽しみながらメンタルタフネスを養う。成功体験が自信になる。'},
+  {id:'l35',time:'25',category:'実戦',name:'試合形式（前後半制）',
+   content:'前後半各10分のフル試合形式。タイム・スコア・攻守交替すべて本番通り。コーチは記録役に徹する。',
+   tip:'試合経験値を積む。プレー中は口を出さない。試合後に「良かったプレー3つ」を子どもが発表する。'},
+  /* ===== 整理 ===== */
+  {id:'l36',time:'10',category:'整理',name:'クールダウン＆MVP発表',
+   content:'ジョグ1周 → 静的ストレッチ5分 → 今日のMVP発表（コーチが理由とともに発表）→ 全員でグータッチ。',
+   tip:'必ずポジティブに終わる。MVPは毎回変える。理由を言うことで何が良かったかが伝わる。'},
+  {id:'l37',time:'10',category:'整理',name:'振り返りサークル',
+   content:'全員で円になる → 今日よかったこと1つを全員が発言 → コーチが今日のテーマの達成度を短くまとめる → 次回予告。',
+   tip:'否定なし・どんな意見も拍手。子どもが自分のプレーを言語化する力がつく。次回への期待感を作る。'},
+];
   {id:'l2',time:'5',category:'集合',name:'挨拶・今日の目標',content:'全員で今日のテーマを共有 / 前回の振り返り',tip:'ポジティブに始める'},
   {id:'l3',time:'10',category:'W-UP',name:'鬼ごっこ系アップ',content:'①しっぽ取り鬼ごっこ（タグ兼用）5分 / ②ボール持ち鬼ごっこ 5分',tip:'タグを取る＝守備の基本'},
   {id:'l4',time:'10',category:'W-UP',name:'タグ鬼ごっこ',content:'しっぽ取り or 氷鬼タグ版 / 楽しみながらアジリティ',tip:'全力で動く習慣'},
@@ -667,8 +870,12 @@ const DEFAULT_LIBRARY = [
 ];
 
 const DEFAULT_PRACTICES = [
-  {id:'pr1',title:'初回練習 3/29',date:'2026-03-29',menuIds:['l1','l3','l5','l7','l9','l10','l14','l16']},
-  {id:'pr2',title:'週間テンプレート',date:'',menuIds:['l2','l4','l6','l8','l13','l11','l12','l15','l16']},
+  {id:'pr1',title:'初回練習 3/29',date:'2026-03-29',
+   menuIds:['l3','l4','l9','l13','l18','l22','l30','l36']},
+  {id:'pr2',title:'基礎週間テンプレート',date:'',
+   menuIds:['l1','l5','l10','l14','l20','l23','l31','l36']},
+  {id:'pr3',title:'守備強化メニュー',date:'',
+   menuIds:['l2','l7','l11','l16','l26','l27','l29','l37']},
 ];
 
 const DEFAULT_ATTACK = [
@@ -685,7 +892,7 @@ const DEFAULT_DEFENSE = [
 ];
 
 const STORAGE_VERSION = 1;
-const DATA_KEYS = ['slogan','members','policies','challenges','phases','library','practices','attack','defense','evals'];
+const DATA_KEYS = ['slogan','appTitle','appSubtitle','members','policies','challenges','phases','library','practices','attack','defense','evals','matches'];
 
 // ===== STORAGE =====
 function load(key, def) {
@@ -697,6 +904,8 @@ function save(key, val) {
 
 let data = {
   slogan: load('slogan', '全員で前に出る、全員で獲りに行く'),
+  appTitle: load('appTitle', 'TAG RUGBY 2026'),
+  appSubtitle: load('appSubtitle', '新チーム運営計画'),
   members: load('members', DEFAULT_MEMBERS),
   policies: load('policies', DEFAULT_POLICIES),
   challenges: load('challenges', DEFAULT_CHALLENGES),
@@ -706,6 +915,7 @@ let data = {
   attack: load('attack', DEFAULT_ATTACK),
   defense: load('defense', DEFAULT_DEFENSE),
   evals: load('evals', {}),
+  matches: load('matches', []),
 };
 
 function touchLastSavedAt(ts) {
@@ -745,7 +955,15 @@ function colorHex(c) {
   return map[c] || '#6b7280';
 }
 function categoryColor(cat) {
-  const map = {'集合':'#16a34a','W-UP':'#0891b2','基礎':'#dc2626','基礎①':'#dc2626','基礎②':'#b91c1c','戦術':'#ea580c','戦術①':'#ea580c','戦術②':'#c2410c','実戦':'#7c3aed','個人':'#ca8a04','整理':'#16a34a'};
+  const map = {
+    '集合':'#16a34a','W-UP':'#0891b2',
+    'キャッチ':'#dc2626','パス':'#b91c1c',
+    'タテ突破':'#ea580c','フォロー':'#d97706',
+    '守備':'#2563eb','実戦':'#7c3aed','整理':'#16a34a',
+    // 旧カテゴリ（既存データ互換）
+    '基礎':'#dc2626','基礎①':'#dc2626','基礎②':'#b91c1c',
+    '戦術':'#ea580c','戦術①':'#ea580c','戦術②':'#c2410c','個人':'#ca8a04',
+  };
   return map[cat] || '#6b7280';
 }
 function formatDateTime(value) {
@@ -829,6 +1047,8 @@ function resetAppData() {
   if (!confirm('アプリ内容を初期データに戻します。現在の内容は消えます。よろしいですか？')) return;
   data = {
     slogan: '全員で前に出る、全員で獲りに行く',
+    appTitle: 'TAG RUGBY 2026',
+    appSubtitle: '新チーム運営計画',
     members: JSON.parse(JSON.stringify(DEFAULT_MEMBERS)),
     policies: JSON.parse(JSON.stringify(DEFAULT_POLICIES)),
     challenges: JSON.parse(JSON.stringify(DEFAULT_CHALLENGES)),
@@ -838,6 +1058,7 @@ function resetAppData() {
     attack: JSON.parse(JSON.stringify(DEFAULT_ATTACK)),
     defense: JSON.parse(JSON.stringify(DEFAULT_DEFENSE)),
     evals: {},
+    matches: [],
   };
   currentEvalDate = '';
   const evalInput = document.getElementById('evalDateInput');
@@ -847,6 +1068,7 @@ function resetAppData() {
   showToast('初期データに戻しました');
 }
 function renderAll() {
+  renderAppTitle();
   renderHome();
   renderMembers();
   renderPractice();
@@ -871,12 +1093,14 @@ function switchTab(tab) {
 
 // ===== HOME =====
 function renderHome() {
+  renderAppTitle();
   document.getElementById('sloganText').textContent = data.slogan;
   updateStats();
   renderStorageStatus();
   renderPolicies();
   renderChallenges();
   renderPhases();
+  renderMatches();
 }
 
 function updateStats() {
@@ -1180,6 +1404,7 @@ function renderPracticeList() {
           <div style="font-size:13px;color:var(--gray-500);margin-top:2px;">${p.date || '日付なし'} · ${p.menuIds.length}メニュー · 計${total}分</div>
         </div>
         <div style="display:flex;gap:4px;">
+          <button class="btn btn-secondary btn-icon btn-sm" onclick="event.stopPropagation();copyPractice('${p.id}')" title="コピー">📋</button>
           <button class="btn btn-secondary btn-icon btn-sm" onclick="event.stopPropagation();openEditPracticeModal('${p.id}')">✏️</button>
           <button class="btn btn-secondary btn-icon btn-sm" onclick="event.stopPropagation();deletePractice('${p.id}')">🗑</button>
         </div>
@@ -1228,7 +1453,7 @@ function openLibraryItemModal(id) {
     document.getElementById('libTip').value = m.tip;
   } else {
     ['libName','libTime','libContent','libTip'].forEach(x => document.getElementById(x).value = '');
-    document.getElementById('libCategory').value = '基礎';
+    document.getElementById('libCategory').value = 'キャッチ';
   }
   openModal('libraryItemModal');
 }
@@ -1255,7 +1480,23 @@ function deleteLibraryItem(id) {
 
 // Practice Create/Edit
 let selectedMenuIds = [];
+let libFilterCat = 'ALL';
+
+function renderLibFilterChips() {
+  const el = document.getElementById('libFilterChips');
+  if (!el) return;
+  const cats = ['ALL', ...new Set(data.library.map(m => m.category))];
+  el.innerHTML = cats.map(c =>
+    `<span class="lib-filter-chip ${c === libFilterCat ? 'active' : ''}" onclick="setLibFilter('${c}')">${c === 'ALL' ? 'すべて' : e(c)}</span>`
+  ).join('');
+}
+function setLibFilter(cat) {
+  libFilterCat = cat;
+  renderLibPicker();
+}
+
 function openNewPracticeModal(editId) {
+  libFilterCat = 'ALL';
   document.getElementById('practiceEditId').value = editId || '';
   document.getElementById('newPracticeTitle').textContent = editId ? '練習メニューを編集' : '練習メニューを作成';
   if (editId) {
@@ -1275,8 +1516,10 @@ function openNewPracticeModal(editId) {
 function openEditPracticeModal(id) { openNewPracticeModal(id); }
 
 function renderLibPicker() {
+  renderLibFilterChips();
+  const filtered = libFilterCat === 'ALL' ? data.library : data.library.filter(m => m.category === libFilterCat);
   const el = document.getElementById('libPickerList');
-  el.innerHTML = data.library.map(m => `
+  el.innerHTML = filtered.map(m => `
     <div class="list-item" style="padding:8px 12px;cursor:pointer;" onclick="toggleMenuSelect('${m.id}')">
       <div style="flex:1;">
         <span class="menu-badge" style="background:${categoryColor(m.category)}22;color:${categoryColor(m.category)};margin-right:6px;">${e(m.category)}</span>
@@ -1287,7 +1530,7 @@ function renderLibPicker() {
         ${selectedMenuIds.includes(m.id) ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>' : ''}
       </div>
     </div>
-  `).join('');
+  `).join('') || '<div style="padding:16px;text-align:center;color:var(--gray-400);font-size:13px;">該当するメニューがありません</div>';
 }
 
 function toggleMenuSelect(id) {
@@ -1300,18 +1543,33 @@ function toggleMenuSelect(id) {
 
 function renderSelectedMenus() {
   const el = document.getElementById('selectedMenuList');
-  if (!selectedMenuIds.length) { el.innerHTML = '<div style="font-size:13px;color:var(--gray-400);text-align:center;padding:12px;">メニューを選択してください</div>'; return; }
+  if (!selectedMenuIds.length) {
+    el.innerHTML = '<div style="font-size:13px;color:var(--gray-400);text-align:center;padding:12px;">メニューを選択してください</div>';
+    return;
+  }
+  const total = selectedMenuIds.reduce((acc, id) => {
+    const m = data.library.find(l => l.id === id);
+    return acc + (m ? parseInt(m.time) || 0 : 0);
+  }, 0);
   el.innerHTML = selectedMenuIds.map((id, i) => {
     const m = data.library.find(l => l.id === id);
     if (!m) return '';
+    const isFirst = i === 0;
+    const isLast = i === selectedMenuIds.length - 1;
     return `
-      <div style="display:flex;align-items:center;gap:8px;padding:6px 4px;border-bottom:1px solid var(--gray-100);">
-        <div class="practice-order">${i+1}</div>
-        <div style="flex:1;font-size:14px;font-weight:600;">${e(m.name)}<span class="menu-time" style="margin-left:6px;">${e(m.time)}分</span></div>
-        <button class="btn btn-secondary btn-icon btn-sm" onclick="removeSelectedMenu('${id}')">✕</button>
+      <div style="display:flex;align-items:center;gap:6px;padding:6px 4px;border-bottom:1px solid var(--gray-100);">
+        <div class="practice-order" style="flex-shrink:0;">${i+1}</div>
+        <div style="flex:1;font-size:14px;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+          ${e(m.name)}<span class="menu-time" style="margin-left:4px;">${e(m.time)}分</span>
+        </div>
+        <div style="display:flex;gap:2px;flex-shrink:0;">
+          <button class="btn btn-secondary btn-icon btn-sm" onclick="moveMenuUp('${id}')" ${isFirst ? 'disabled' : ''} style="font-size:11px;">▲</button>
+          <button class="btn btn-secondary btn-icon btn-sm" onclick="moveMenuDown('${id}')" ${isLast ? 'disabled' : ''} style="font-size:11px;">▼</button>
+          <button class="btn btn-secondary btn-icon btn-sm" onclick="removeSelectedMenu('${id}')">✕</button>
+        </div>
       </div>
     `;
-  }).join('');
+  }).join('') + `<div style="text-align:right;font-size:12px;font-weight:700;color:var(--gray-500);padding:6px 4px 0;">合計 ${total}分</div>`;
 }
 
 function removeSelectedMenu(id) {
@@ -1338,6 +1596,38 @@ function deletePractice(id) {
   if (!confirm('削除しますか？')) return;
   data.practices = data.practices.filter(x => x.id !== id);
   saveAll(); renderPracticeList();
+}
+
+function copyPractice(id) {
+  const p = data.practices.find(x => x.id === id);
+  if (!p) return;
+  const copy = {
+    id: uid(),
+    title: p.title + '（コピー）',
+    date: p.date,
+    menuIds: [...p.menuIds],
+  };
+  data.practices.push(copy);
+  saveAll(); renderPracticeList(); showToast('コピーしました ✓');
+}
+
+function copyCurrentPractice() {
+  copyPractice(currentDetailPracticeId);
+  closeModal('practiceDetailModal');
+}
+
+function moveMenuUp(id) {
+  const idx = selectedMenuIds.indexOf(id);
+  if (idx <= 0) return;
+  [selectedMenuIds[idx - 1], selectedMenuIds[idx]] = [selectedMenuIds[idx], selectedMenuIds[idx - 1]];
+  renderSelectedMenus();
+}
+
+function moveMenuDown(id) {
+  const idx = selectedMenuIds.indexOf(id);
+  if (idx < 0 || idx >= selectedMenuIds.length - 1) return;
+  [selectedMenuIds[idx + 1], selectedMenuIds[idx]] = [selectedMenuIds[idx], selectedMenuIds[idx + 1]];
+  renderSelectedMenus();
 }
 
 function showPracticeDetail(id) {
@@ -1734,7 +2024,387 @@ function finishTimer() {
   showToast('🎉 練習完了！お疲れ様でした！');
 }
 
+// ===== APP TITLE =====
+function renderAppTitle() {
+  const t = document.getElementById('appTitleDisplay');
+  const s = document.getElementById('appSubtitleDisplay');
+  if (t) t.textContent = data.appTitle || 'TAG RUGBY 2026';
+  if (s) s.textContent = data.appSubtitle || '新チーム運営計画';
+  document.title = data.appTitle || 'TAG RUGBY 2026';
+}
+function openAppTitleModal() {
+  document.getElementById('appTitleInput').value = data.appTitle || '';
+  document.getElementById('appSubtitleInput').value = data.appSubtitle || '';
+  openModal('appTitleModal');
+}
+function saveAppTitle() {
+  data.appTitle = document.getElementById('appTitleInput').value.trim() || 'TAG RUGBY 2026';
+  data.appSubtitle = document.getElementById('appSubtitleInput').value.trim() || '新チーム運営計画';
+  saveAll(); renderAppTitle(); closeModal('appTitleModal'); showToast();
+}
+
+// ===== GRADE ADVANCEMENT =====
+function advanceGrades() {
+  const order = ['新1年','新2年','新3年','新4年','新5年','新6年'];
+  const graduating = data.members.filter(m => m.grade === '新6年');
+  let msg = '全部員の学年を1つ繰り上げます。';
+  if (graduating.length) {
+    msg += `\n卒業予定：${graduating.map(m => m.name).join('、')} は「卒業」になります。`;
+  }
+  msg += '\n\n実行しますか？（取り消せません）';
+  if (!confirm(msg)) return;
+  data.members = data.members.map(m => {
+    const idx = order.indexOf(m.grade);
+    if (idx === -1) return m;
+    if (idx === order.length - 1) return { ...m, grade: '卒業' };
+    return { ...m, grade: order[idx + 1] };
+  });
+  saveAll(); renderMembers(); showToast('学年を更新しました ✓');
+}
+
+// ===== MATCHES =====
+function renderMatches() {
+  const el = document.getElementById('matchList');
+  if (!el) return;
+  if (!data.matches || !data.matches.length) {
+    el.innerHTML = '<div class="empty-state" style="padding:24px;"><div class="empty-state-text">試合記録がありません</div></div>';
+    return;
+  }
+  const sorted = [...data.matches].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  const wins = data.matches.filter(m => parseInt(m.ourScore) > parseInt(m.theirScore)).length;
+  const loses = data.matches.filter(m => parseInt(m.ourScore) < parseInt(m.theirScore)).length;
+  const draws = data.matches.length - wins - loses;
+  el.innerHTML = `
+    <div style="display:flex;gap:12px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--gray-100);">
+      <div style="flex:1;text-align:center;"><div style="font-size:22px;font-weight:800;color:var(--green);">${wins}</div><div style="font-size:11px;color:var(--gray-500);font-weight:600;">勝</div></div>
+      <div style="flex:1;text-align:center;"><div style="font-size:22px;font-weight:800;color:var(--gray-500);">${draws}</div><div style="font-size:11px;color:var(--gray-500);font-weight:600;">分</div></div>
+      <div style="flex:1;text-align:center;"><div style="font-size:22px;font-weight:800;color:var(--red);">${loses}</div><div style="font-size:11px;color:var(--gray-500);font-weight:600;">敗</div></div>
+    </div>
+    ${sorted.map(m => {
+      const our = parseInt(m.ourScore) || 0;
+      const their = parseInt(m.theirScore) || 0;
+      const res = our > their ? 'win' : our < their ? 'lose' : 'draw';
+      const resLabel = res === 'win' ? '勝' : res === 'lose' ? '負' : '分';
+      return `
+        <div class="match-item">
+          <div class="match-result match-${res}">${resLabel}</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:15px;font-weight:700;">${e(m.opponent || '不明')}</div>
+            <div style="font-size:13px;color:var(--gray-500);margin-top:1px;">${m.date || ''} &nbsp;${our} − ${their}</div>
+            ${m.notes ? `<div style="font-size:12px;color:var(--gray-600);margin-top:3px;line-height:1.4;">${e(m.notes)}</div>` : ''}
+          </div>
+          <div style="display:flex;gap:4px;">
+            <button class="btn btn-secondary btn-icon btn-sm" onclick="openMatchModal('${m.id}')">✏️</button>
+            <button class="btn btn-secondary btn-icon btn-sm" onclick="deleteMatch('${m.id}')">🗑</button>
+          </div>
+        </div>
+      `;
+    }).join('')}
+  `;
+}
+function openMatchModal(id) {
+  document.getElementById('matchEditId').value = id || '';
+  document.getElementById('matchModalTitle').textContent = id ? '試合を編集' : '試合を追加';
+  if (id) {
+    const m = data.matches.find(x => x.id === id);
+    if (!m) return;
+    document.getElementById('matchDate').value = m.date || '';
+    document.getElementById('matchOpponent').value = m.opponent || '';
+    document.getElementById('matchOurScore').value = m.ourScore || '';
+    document.getElementById('matchTheirScore').value = m.theirScore || '';
+    document.getElementById('matchNotes').value = m.notes || '';
+  } else {
+    document.getElementById('matchDate').value = new Date().toISOString().slice(0, 10);
+    document.getElementById('matchOpponent').value = '';
+    document.getElementById('matchOurScore').value = '';
+    document.getElementById('matchTheirScore').value = '';
+    document.getElementById('matchNotes').value = '';
+  }
+  openModal('matchModal');
+}
+function saveMatch() {
+  const id = document.getElementById('matchEditId').value;
+  const obj = {
+    id: id || uid(),
+    date: document.getElementById('matchDate').value,
+    opponent: document.getElementById('matchOpponent').value.trim(),
+    ourScore: document.getElementById('matchOurScore').value.trim(),
+    theirScore: document.getElementById('matchTheirScore').value.trim(),
+    notes: document.getElementById('matchNotes').value.trim(),
+  };
+  if (!obj.opponent) return;
+  if (!data.matches) data.matches = [];
+  if (id) { const i = data.matches.findIndex(x => x.id === id); if (i !== -1) data.matches[i] = obj; }
+  else data.matches.push(obj);
+  saveAll(); renderMatches(); closeModal('matchModal'); showToast();
+}
+function deleteMatch(id) {
+  if (!confirm('削除しますか？')) return;
+  data.matches = data.matches.filter(x => x.id !== id);
+  saveAll(); renderMatches();
+}
+
+// ===== GROWTH CHART =====
+// ===== RADAR CHART =====
+function buildRadarSVG(skillValues, prevSkillValues, size, accentColor) {
+  const n = SKILLS.length;
+  const cx = size / 2, cy = size / 2;
+  const maxR = size * 0.32;
+  const labelR = size * 0.44;
+  const color = accentColor || '#dc2626';
+  function polar(i, val) {
+    const a = (i * 2 * Math.PI / n) - Math.PI / 2;
+    const r = (Math.max(0, Math.min(5, val)) / 5) * maxR;
+    return [(cx + r * Math.cos(a)).toFixed(1), (cy + r * Math.sin(a)).toFixed(1)];
+  }
+  // Grid
+  let grid = '';
+  for (let l = 1; l <= 5; l++) {
+    const pts = SKILLS.map((_, i) => {
+      const a = (i * 2 * Math.PI / n) - Math.PI / 2;
+      const r = (l / 5) * maxR;
+      return `${(cx + r * Math.cos(a)).toFixed(1)},${(cy + r * Math.sin(a)).toFixed(1)}`;
+    }).join(' ');
+    grid += `<polygon points="${pts}" fill="${l === 5 ? 'rgba(220,38,38,0.03)' : 'none'}" stroke="#9ca3af" stroke-width="${l === 5 ? 1.2 : 0.7}" stroke-opacity="0.4"/>`;
+  }
+  // Axes
+  const axes = SKILLS.map((_, i) => {
+    const a = (i * 2 * Math.PI / n) - Math.PI / 2;
+    return `<line x1="${cx}" y1="${cy}" x2="${(cx + maxR * Math.cos(a)).toFixed(1)}" y2="${(cy + maxR * Math.sin(a)).toFixed(1)}" stroke="#9ca3af" stroke-width="0.7" stroke-opacity="0.35"/>`;
+  }).join('');
+  // Previous polygon
+  let prevPoly = '';
+  if (prevSkillValues) {
+    const pts = SKILLS.map((_, i) => polar(i, prevSkillValues[i] || 0).join(',')).join(' ');
+    prevPoly = `<polygon points="${pts}" fill="none" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.6"/>`;
+  }
+  // Data polygon
+  const pts = SKILLS.map((_, i) => polar(i, skillValues[i] || 0).join(',')).join(' ');
+  const dataPoly = `<polygon points="${pts}" fill="${color}" fill-opacity="0.18" stroke="${color}" stroke-width="2.2" stroke-linejoin="round"/>`;
+  // Dots
+  const dots = SKILLS.map((_, i) => {
+    const [x, y] = polar(i, skillValues[i] || 0);
+    return `<circle cx="${x}" cy="${y}" r="3" fill="${color}" opacity="0.9"/>`;
+  }).join('');
+  // Labels
+  const labels = SKILLS.map((skill, i) => {
+    const a = (i * 2 * Math.PI / n) - Math.PI / 2;
+    const x = (cx + labelR * Math.cos(a)).toFixed(1);
+    const y = (cy + labelR * Math.sin(a)).toFixed(1);
+    const val = (skillValues[i] || 0).toFixed(0);
+    return `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="middle" font-size="9" fill="#374151" font-family="-apple-system,sans-serif" font-weight="600">${skill}</text>`;
+  }).join('');
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="overflow:visible;">${grid}${axes}${prevPoly}${dataPoly}${dots}${labels}</svg>`;
+}
+
+// ===== TEAM SUMMARY =====
+let teamSummaryOpen = false;
+
+function getLatestTeamSkillAverages() {
+  const allDates = Object.keys(data.evals).sort();
+  if (!allDates.length || !data.members.length) return null;
+  const totals = Object.fromEntries(SKILLS.map(s => [s, 0]));
+  const counts = Object.fromEntries(SKILLS.map(s => [s, 0]));
+  let evaledCount = 0;
+  data.members.forEach(m => {
+    let latestEval = null;
+    for (let i = allDates.length - 1; i >= 0; i--) {
+      const ev = data.evals[allDates[i]];
+      if (ev && ev[m.id] && ev[m.id].skills) { latestEval = ev[m.id]; break; }
+    }
+    if (!latestEval) return;
+    evaledCount++;
+    SKILLS.forEach(s => { totals[s] += latestEval.skills[s] || 0; counts[s]++; });
+  });
+  if (!evaledCount) return null;
+  const avgs = Object.fromEntries(SKILLS.map(s => [s, counts[s] > 0 ? totals[s] / counts[s] : 0]));
+  return { avgs, evaledCount };
+}
+
+function renderTeamSummary() {
+  const el = document.getElementById('teamSummaryView');
+  const result = getLatestTeamSkillAverages();
+  if (!result) {
+    el.innerHTML = '<div class="empty-state" style="padding:48px 24px;"><div class="empty-state-icon">🏉</div><div class="empty-state-text">評価データがありません<br>評価タブで記録してください</div></div>';
+    return;
+  }
+  const { avgs, evaledCount } = result;
+  const skillValues = SKILLS.map(s => avgs[s]);
+  const overallAvg = (skillValues.reduce((a, b) => a + b, 0) / skillValues.length).toFixed(2);
+  const maxSkill = SKILLS.reduce((a, b) => avgs[a] >= avgs[b] ? a : b);
+  const minSkill = SKILLS.reduce((a, b) => avgs[a] <= avgs[b] ? a : b);
+  const radarSvg = buildRadarSVG(skillValues, null, 224, '#dc2626');
+  let html = `
+    <div class="card" style="margin:0 16px 12px;">
+      <div style="text-align:center;margin-bottom:4px;">
+        <div style="font-size:12px;font-weight:700;color:var(--gray-500);letter-spacing:0.06em;">チーム全体スキル分析（${evaledCount}名の最新評価）</div>
+      </div>
+      <div style="display:flex;justify-content:center;margin-bottom:4px;">${radarSvg}</div>
+      <div style="text-align:center;margin-bottom:16px;">
+        <div style="font-size:38px;font-weight:800;color:var(--red);line-height:1;">${overallAvg}</div>
+        <div style="font-size:12px;color:var(--gray-500);">チーム平均スコア（/ 5.0）</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+        <div style="background:#dcfce7;border-radius:10px;padding:10px 12px;">
+          <div style="font-size:10px;font-weight:700;color:#16a34a;letter-spacing:0.05em;">チームの強み ✓</div>
+          <div style="font-size:15px;font-weight:800;color:#15803d;margin-top:3px;">${maxSkill}</div>
+          <div style="font-size:22px;font-weight:800;color:#16a34a;line-height:1;">${avgs[maxSkill].toFixed(1)}</div>
+        </div>
+        <div style="background:#fee2e2;border-radius:10px;padding:10px 12px;">
+          <div style="font-size:10px;font-weight:700;color:#dc2626;letter-spacing:0.05em;">重点強化ポイント !</div>
+          <div style="font-size:15px;font-weight:800;color:#b91c1c;margin-top:3px;">${minSkill}</div>
+          <div style="font-size:22px;font-weight:800;color:#dc2626;line-height:1;">${avgs[minSkill].toFixed(1)}</div>
+        </div>
+      </div>
+      <div style="font-size:12px;font-weight:700;color:var(--gray-500);margin-bottom:8px;">スキル別平均</div>
+  `;
+  SKILLS.forEach(skill => {
+    const val = avgs[skill];
+    const pct = (val / 5) * 100;
+    const isMax = skill === maxSkill, isMin = skill === minSkill;
+    const barColor = val >= 4 ? 'var(--green)' : val >= 2.5 ? 'var(--orange)' : 'var(--red)';
+    html += `
+      <div class="growth-row">
+        <div class="skill-name" style="${isMax ? 'color:var(--green);font-weight:800;' : isMin ? 'color:var(--red);font-weight:800;' : ''}">${skill}${isMax ? ' ▲' : isMin ? ' ▼' : ''}</div>
+        <div class="growth-bar-bg"><div class="growth-bar" style="width:${pct.toFixed(1)}%;background:${barColor};"></div></div>
+        <div style="font-size:13px;font-weight:700;color:var(--gray-600);min-width:28px;text-align:right;">${val.toFixed(1)}</div>
+      </div>`;
+  });
+  html += `</div>`;
+  el.innerHTML = html;
+}
+
+function toggleTeamSummary() {
+  if (growthChartOpen) {
+    growthChartOpen = false;
+    document.getElementById('growthChartView').style.display = 'none';
+    document.getElementById('evalList').style.display = '';
+    document.getElementById('growthChartBtn').textContent = '📊 成長グラフ';
+    const sb = document.getElementById('evalSaveBtn'); if (sb) sb.style.display = '';
+  }
+  teamSummaryOpen = !teamSummaryOpen;
+  const view = document.getElementById('teamSummaryView');
+  const btn = document.getElementById('teamSummaryBtn');
+  const evalList = document.getElementById('evalList');
+  const saveBtn = document.getElementById('evalSaveBtn');
+  if (teamSummaryOpen) {
+    view.style.display = 'block';
+    evalList.style.display = 'none';
+    btn.textContent = '📋 評価入力';
+    if (saveBtn) saveBtn.style.display = 'none';
+    renderTeamSummary();
+  } else {
+    view.style.display = 'none';
+    evalList.style.display = '';
+    btn.textContent = '🏉 チーム分析';
+    if (saveBtn) saveBtn.style.display = '';
+  }
+}
+
+// ===== GROWTH CHART (RADAR) =====
+let growthChartOpen = false;
+function toggleGrowthChart() {
+  if (teamSummaryOpen) {
+    teamSummaryOpen = false;
+    document.getElementById('teamSummaryView').style.display = 'none';
+    document.getElementById('evalList').style.display = '';
+    document.getElementById('teamSummaryBtn').textContent = '🏉 チーム分析';
+    const sb = document.getElementById('evalSaveBtn'); if (sb) sb.style.display = '';
+  }
+  growthChartOpen = !growthChartOpen;
+  const chartView = document.getElementById('growthChartView');
+  const evalList = document.getElementById('evalList');
+  const btn = document.getElementById('growthChartBtn');
+  const saveBtn = document.getElementById('evalSaveBtn');
+  if (growthChartOpen) {
+    chartView.style.display = 'block';
+    evalList.style.display = 'none';
+    btn.textContent = '📋 評価入力';
+    if (saveBtn) saveBtn.style.display = 'none';
+    renderGrowthChart();
+  } else {
+    chartView.style.display = 'none';
+    evalList.style.display = '';
+    btn.textContent = '📊 成長グラフ';
+    if (saveBtn) saveBtn.style.display = '';
+  }
+}
+
+function renderGrowthChart() {
+  const el = document.getElementById('growthChartView');
+  const allDates = Object.keys(data.evals).sort();
+  if (!allDates.length || !data.members.length) {
+    el.innerHTML = '<div class="empty-state" style="padding:48px 24px;"><div class="empty-state-icon">📊</div><div class="empty-state-text">評価データがありません。<br>評価タブで記録を追加してください。</div></div>';
+    return;
+  }
+  let html = '';
+  data.members.forEach(m => {
+    const isExp = m.exp !== '初心者';
+    const initial = m.name.charAt(0);
+    // 評価データが存在する日付のみ取得
+    const playerDates = allDates.filter(d => {
+      const ev = data.evals[d];
+      return ev && ev[m.id] && ev[m.id].skills;
+    });
+    if (!playerDates.length) return;
+    const latestDate = playerDates[playerDates.length - 1];
+    const prevDate = playerDates.length > 1 ? playerDates[playerDates.length - 2] : null;
+    const latestEval = data.evals[latestDate][m.id];
+    const latestVals = SKILLS.map(s => latestEval.skills[s] || 0);
+    const latestAvg = latestVals.reduce((a, b) => a + b, 0) / latestVals.length;
+    let prevVals = null, trend = 0;
+    if (prevDate) {
+      const prevEval = data.evals[prevDate][m.id];
+      prevVals = SKILLS.map(s => prevEval.skills[s] || 0);
+      const prevAvg = prevVals.reduce((a, b) => a + b, 0) / prevVals.length;
+      trend = latestAvg - prevAvg;
+    }
+    const trendStr = trend > 0.01 ? `▲ +${trend.toFixed(1)}` : trend < -0.01 ? `▼ ${trend.toFixed(1)}` : '— 変化なし';
+    const trendColor = trend > 0.01 ? 'var(--green)' : trend < -0.01 ? 'var(--red)' : 'var(--gray-400)';
+    const radarSvg = buildRadarSVG(latestVals, prevVals, 210, '#dc2626');
+    html += `<div class="card" style="margin:0 16px 12px;">`;
+    html += `
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+        <div class="member-avatar ${isExp ? 'avatar-green' : 'avatar-orange'}" style="width:38px;height:38px;font-size:14px;">${e(initial)}</div>
+        <div style="flex:1;">
+          <div style="font-size:16px;font-weight:700;">${e(m.name)}</div>
+          <div style="font-size:12px;color:var(--gray-500);">${e(m.grade)} · ${playerDates.length}回評価</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:26px;font-weight:800;color:var(--red);line-height:1;">${latestAvg.toFixed(1)}</div>
+          <div style="font-size:12px;font-weight:700;color:${trendColor};">${trendStr}</div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:center;">${radarSvg}</div>
+    `;
+    if (prevDate) {
+      html += `<div style="text-align:center;font-size:11px;color:var(--gray-400);margin-top:2px;">--- 前回（${prevDate}） &nbsp;● 今回（${latestDate}）</div>`;
+    } else {
+      html += `<div style="text-align:center;font-size:11px;color:var(--gray-400);margin-top:2px;">${latestDate}の評価</div>`;
+    }
+    if (playerDates.length > 1) {
+      html += `<div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--gray-100);display:flex;flex-wrap:wrap;gap:4px;">`;
+      playerDates.forEach(d => {
+        const ev = data.evals[d][m.id];
+        const vals = SKILLS.map(s => ev.skills[s] || 0);
+        const avg = (vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(1);
+        const isLatest = d === latestDate;
+        html += `<span style="font-size:12px;padding:2px 8px;border-radius:10px;${isLatest ? 'background:var(--red);color:white;font-weight:700;' : 'background:var(--gray-100);color:var(--gray-600);'}">${d}: ${avg}</span>`;
+      });
+      html += `</div>`;
+    }
+    html += `</div>`;
+  });
+  el.innerHTML = html || '<div class="empty-state" style="padding:48px 24px;"><div class="empty-state-text">評価データがありません</div></div>';
+}
+
 // ===== INIT =====
+// Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
 renderAll();
 </script>
 </body>
