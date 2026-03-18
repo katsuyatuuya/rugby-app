@@ -1,0 +1,1738 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="TAG RUGBY">
+<title>TAG RUGBY 2026</title>
+<style>
+:root {
+  --red: #dc2626;
+  --red-light: #fef2f2;
+  --orange: #ea580c;
+  --green: #16a34a;
+  --blue: #2563eb;
+  --purple: #7c3aed;
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; background: var(--gray-100); color: var(--gray-900); overscroll-behavior: none; }
+#app { display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
+.content { flex: 1; overflow-y: auto; padding-bottom: calc(60px + var(--safe-bottom)); padding-top: calc(var(--safe-top)); -webkit-overflow-scrolling: touch; }
+.tab-bar { position: fixed; bottom: 0; left: 0; right: 0; height: calc(60px + var(--safe-bottom)); background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-top: 1px solid var(--gray-200); display: flex; align-items: flex-start; padding-bottom: var(--safe-bottom); z-index: 100; }
+.tab-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 60px; gap: 2px; cursor: pointer; transition: opacity 0.1s; }
+.tab-item:active { opacity: 0.6; }
+.tab-icon { font-size: 22px; line-height: 1; }
+.tab-label { font-size: 10px; font-weight: 600; color: var(--gray-400); }
+.tab-item.active .tab-label { color: var(--red); }
+.tab-item.active .tab-icon { filter: none; }
+.tab-icon svg { width: 24px; height: 24px; fill: none; stroke: var(--gray-400); stroke-width: 1.8; }
+.tab-item.active svg { stroke: var(--red); }
+.screen { display: none; padding: 0; }
+.screen.active { display: block; }
+.page-header { background: white; padding: calc(var(--safe-top) + 16px) 16px 16px; border-bottom: 1px solid var(--gray-200); }
+.page-title { font-size: 20px; font-weight: 700; color: var(--gray-900); }
+.page-subtitle { font-size: 13px; color: var(--gray-500); margin-top: 2px; }
+.card { background: white; border-radius: 12px; padding: 16px; margin: 12px 16px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.card-title { font-size: 13px; font-weight: 700; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 16px; border-radius: 10px; border: none; cursor: pointer; font-size: 15px; font-weight: 600; transition: opacity 0.1s; }
+.btn:active { opacity: 0.7; }
+.btn-primary { background: var(--red); color: white; }
+.btn-secondary { background: var(--gray-100); color: var(--gray-700); }
+.btn-sm { padding: 6px 12px; font-size: 13px; border-radius: 8px; }
+.btn-icon { width: 34px; height: 34px; padding: 0; border-radius: 8px; }
+.badge { display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+.badge-red { background: #fee2e2; color: #dc2626; }
+.badge-orange { background: #fed7aa; color: #ea580c; }
+.badge-green { background: #dcfce7; color: #16a34a; }
+.badge-blue { background: #dbeafe; color: #2563eb; }
+.badge-purple { background: #ede9fe; color: #7c3aed; }
+.badge-gray { background: var(--gray-100); color: var(--gray-600); }
+input, textarea, select { font-family: inherit; font-size: 16px; color: var(--gray-900); }
+input[type="text"], input[type="date"], textarea, select { width: 100%; padding: 10px 12px; border: 1.5px solid var(--gray-200); border-radius: 10px; outline: none; background: var(--gray-50); transition: border-color 0.2s; }
+input[type="text"]:focus, input[type="date"]:focus, textarea:focus, select:focus { border-color: var(--red); background: white; }
+textarea { resize: vertical; min-height: 80px; }
+.form-label { font-size: 13px; font-weight: 600; color: var(--gray-600); margin-bottom: 6px; display: block; }
+.form-group { margin-bottom: 14px; }
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: flex-end; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal { background: white; border-radius: 20px 20px 0 0; width: 100%; max-height: 90vh; overflow-y: auto; padding: 20px 20px calc(20px + var(--safe-bottom)); }
+.modal-handle { width: 36px; height: 4px; background: var(--gray-300); border-radius: 2px; margin: 0 auto 20px; }
+.modal-title { font-size: 18px; font-weight: 700; margin-bottom: 20px; }
+.modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+.modal-actions .btn { flex: 1; }
+.toast { position: fixed; top: calc(var(--safe-top) + 20px); left: 50%; transform: translateX(-50%) translateY(-80px); background: var(--gray-900); color: white; padding: 10px 20px; border-radius: 20px; font-size: 14px; font-weight: 600; z-index: 300; transition: transform 0.3s ease; white-space: nowrap; }
+.toast.show { transform: translateX(-50%) translateY(0); }
+.divider { height: 1px; background: var(--gray-100); margin: 0; }
+.section-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 16px 8px; }
+.section-title { font-size: 17px; font-weight: 700; color: var(--gray-800); }
+.list-item { background: white; padding: 14px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; }
+.list-item:active { background: var(--gray-50); }
+.empty-state { text-align: center; padding: 48px 24px; color: var(--gray-400); }
+.empty-state-icon { font-size: 48px; margin-bottom: 12px; }
+.empty-state-text { font-size: 15px; }
+.stars { display: flex; gap: 4px; }
+.star { width: 32px; height: 32px; border-radius: 8px; border: 1.5px solid var(--gray-200); background: white; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.1s; }
+.star.active { background: #fbbf24; border-color: #fbbf24; }
+.star:active { transform: scale(0.9); }
+.segment { display: flex; background: var(--gray-100); border-radius: 10px; padding: 3px; margin: 12px 16px 0; }
+.segment-btn { flex: 1; padding: 8px; border: none; background: transparent; border-radius: 8px; font-size: 14px; font-weight: 600; color: var(--gray-500); cursor: pointer; transition: all 0.2s; }
+.segment-btn.active { background: white; color: var(--gray-900); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+/* HOME */
+.home-header { background: linear-gradient(135deg, var(--red), #b91c1c); color: white; padding: calc(var(--safe-top) + 20px) 20px 24px; }
+.home-title { font-size: 13px; font-weight: 700; opacity: 0.8; letter-spacing: 0.1em; }
+.home-subtitle { font-size: 22px; font-weight: 800; margin-top: 4px; line-height: 1.3; }
+.home-slogan { font-size: 14px; opacity: 0.85; margin-top: 8px; padding: 8px 12px; background: rgba(255,255,255,0.15); border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; }
+.stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 12px 16px 0; }
+.stat-card { background: white; border-radius: 12px; padding: 14px 10px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.stat-num { font-size: 28px; font-weight: 800; color: var(--red); line-height: 1; }
+.stat-label { font-size: 11px; color: var(--gray-500); margin-top: 4px; font-weight: 600; }
+.policy-item { display: flex; align-items: flex-start; gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--gray-100); }
+.policy-item:last-child { border-bottom: none; }
+.policy-num { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: white; flex-shrink: 0; }
+.policy-content { flex: 1; }
+.policy-name { font-size: 15px; font-weight: 700; }
+.policy-detail { font-size: 13px; color: var(--gray-500); margin-top: 2px; }
+.challenge-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--gray-100); }
+.challenge-item:last-child { border-bottom: none; }
+.challenge-tag { font-size: 12px; font-weight: 700; }
+.challenge-due { font-size: 12px; color: var(--gray-400); }
+.phase-item { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--gray-100); align-items: flex-start; }
+.phase-item:last-child { border-bottom: none; }
+.phase-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+.phase-period { font-size: 12px; font-weight: 700; color: var(--gray-500); }
+.phase-theme { font-size: 14px; font-weight: 700; }
+.phase-goal { font-size: 12px; color: var(--gray-500); }
+.edit-overlay { display: none; position: fixed; inset: 0; z-index: 50; }
+/* MEMBERS */
+.member-avatar { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; color: white; flex-shrink: 0; }
+.avatar-green { background: linear-gradient(135deg, #16a34a, #15803d); }
+.avatar-orange { background: linear-gradient(135deg, #ea580c, #c2410c); }
+.member-name { font-size: 16px; font-weight: 700; }
+.member-meta { font-size: 12px; color: var(--gray-500); margin-top: 2px; }
+.member-badges { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.member-actions { display: flex; gap: 6px; margin-left: auto; flex-shrink: 0; }
+/* PRACTICE */
+.menu-badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 700; }
+.menu-time { font-size: 12px; color: var(--gray-500); }
+.menu-content { flex: 1; }
+.menu-name { font-size: 15px; font-weight: 700; }
+.menu-desc { font-size: 12px; color: var(--gray-500); margin-top: 2px; line-height: 1.4; }
+.practice-menu-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--gray-100); }
+.practice-menu-row:last-child { border-bottom: none; }
+.practice-order { width: 24px; height: 24px; border-radius: 50%; background: var(--red); color: white; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.library-check { width: 28px; height: 28px; border-radius: 8px; border: 2px solid var(--gray-300); background: white; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.1s; }
+.library-check.checked { background: var(--red); border-color: var(--red); }
+/* TACTICS */
+.tactic-item { display: flex; gap: 12px; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--gray-100); }
+.tactic-item:last-child { border-bottom: none; }
+.tactic-priority { width: 36px; height: 36px; border-radius: 10px; background: var(--red); color: white; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.tactic-def .tactic-priority { background: var(--blue); }
+.tactic-content { flex: 1; }
+.tactic-name { font-size: 15px; font-weight: 700; }
+.tactic-detail { font-size: 13px; color: var(--gray-500); margin-top: 2px; }
+.tactic-keyword { font-size: 12px; font-weight: 700; color: var(--red); margin-top: 4px; }
+.tactic-def .tactic-keyword { color: var(--blue); }
+/* EVALUATION */
+.eval-player { background: white; border-radius: 12px; margin: 0 16px 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.eval-player-header { padding: 14px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; }
+.eval-player-body { display: none; padding: 0 16px 16px; }
+.eval-player-body.open { display: block; }
+.skill-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--gray-100); }
+.skill-row:last-child { border-bottom: none; }
+.skill-name { font-size: 14px; font-weight: 600; color: var(--gray-700); min-width: 80px; }
+.date-chip { display: inline-flex; align-items: center; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1.5px solid var(--gray-200); background: white; color: var(--gray-600); margin: 0 4px 4px 0; transition: all 0.1s; }
+.date-chip.active { background: var(--red); border-color: var(--red); color: white; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="content" id="mainContent">
+    <!-- HOME -->
+    <div class="screen active" id="screen-home">
+      <div class="home-header">
+        <div class="home-title">TAG RUGBY 2026</div>
+        <div class="home-subtitle">新チーム運営計画</div>
+        <div class="home-slogan" id="sloganDisplay" onclick="editSlogan()">
+          <span id="sloganText">全員で前に出る、全員で獲りに行く</span>
+          <span style="opacity:0.7;font-size:12px;">✏️</span>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-num" id="statTotal">9</div><div class="stat-label">総部員数</div></div>
+        <div class="stat-card"><div class="stat-num" id="stat2nd">6</div><div class="stat-label">新2年生</div></div>
+        <div class="stat-card"><div class="stat-num" id="stat1st">3</div><div class="stat-label">新1年生</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">データ管理</div>
+        <div style="font-size:14px;font-weight:700;color:var(--gray-800);">この端末に自動保存中</div>
+        <div id="storageStatus" style="font-size:13px;color:var(--gray-500);margin-top:6px;line-height:1.6;"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
+          <button class="btn btn-primary btn-sm" onclick="exportBackup()">バックアップ保存</button>
+          <button class="btn btn-secondary btn-sm" onclick="triggerImport()">読み込み</button>
+          <button class="btn btn-secondary btn-sm" onclick="resetAppData()">初期データに戻す</button>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 16px 8px;">
+        <div class="section-title">指導方針（5本柱）</div>
+        <button class="btn btn-secondary btn-sm" onclick="openPolicyModal()">＋ 追加</button>
+      </div>
+      <div class="card" style="padding:8px 16px;" id="policyList"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 16px 8px;">
+        <div class="section-title">課題と対策</div>
+        <button class="btn btn-secondary btn-sm" onclick="openChallengeModal()">＋ 追加</button>
+      </div>
+      <div class="card" style="padding:8px 16px;" id="challengeList"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 16px 8px;">
+        <div class="section-title">年間育成計画</div>
+        <button class="btn btn-secondary btn-sm" onclick="openPhaseModal()">＋ 追加</button>
+      </div>
+      <div class="card" style="padding:8px 16px;margin-bottom:12px;" id="phaseList"></div>
+    </div>
+    <!-- MEMBERS -->
+    <div class="screen" id="screen-members">
+      <div class="page-header" style="padding-top:calc(var(--safe-top) + 16px);">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div><div class="page-title">部員管理</div><div class="page-subtitle" id="memberCount">9名登録中</div></div>
+          <button class="btn btn-primary btn-sm" onclick="openMemberModal()">＋ 追加</button>
+        </div>
+      </div>
+      <div id="memberList" style="padding-bottom:16px;"></div>
+    </div>
+    <!-- PRACTICE -->
+    <div class="screen" id="screen-practice">
+      <div class="page-header" style="padding-top:calc(var(--safe-top) + 16px);">
+        <div class="page-title">練習管理</div>
+      </div>
+      <div class="segment" id="practiceSegment">
+        <button class="segment-btn active" onclick="switchPracticeTab('sessions')">練習メニュー</button>
+        <button class="segment-btn" onclick="switchPracticeTab('library')">ライブラリ</button>
+      </div>
+      <div id="practiceSessionsView">
+        <div class="section-header">
+          <div class="section-title">作成済み練習</div>
+          <button class="btn btn-primary btn-sm" onclick="openNewPracticeModal()">＋ 新規作成</button>
+        </div>
+        <div id="practiceList"></div>
+      </div>
+      <div id="practiceLibraryView" style="display:none;">
+        <div class="section-header">
+          <div class="section-title">メニューライブラリ</div>
+          <button class="btn btn-primary btn-sm" onclick="openLibraryItemModal()">＋ 追加</button>
+        </div>
+        <div id="libraryList"></div>
+      </div>
+    </div>
+    <!-- TACTICS -->
+    <div class="screen" id="screen-tactics">
+      <div class="page-header" style="padding-top:calc(var(--safe-top) + 16px);">
+        <div class="page-title">戦術</div>
+      </div>
+      <div class="segment" id="tacticsSegment">
+        <button class="segment-btn active" onclick="switchTacticsTab('attack')">⚔️ アタック</button>
+        <button class="segment-btn" onclick="switchTacticsTab('defense')">🛡 ディフェンス</button>
+      </div>
+      <div id="attackView">
+        <div class="section-header">
+          <div class="section-title">攻撃の原則</div>
+          <button class="btn btn-primary btn-sm" onclick="openTacticModal('attack')">＋ 追加</button>
+        </div>
+        <div class="card" style="padding:8px 16px;" id="attackList"></div>
+      </div>
+      <div id="defenseView" style="display:none;">
+        <div class="section-header">
+          <div class="section-title">守備の原則</div>
+          <button class="btn btn-primary btn-sm" onclick="openTacticModal('defense')">＋ 追加</button>
+        </div>
+        <div class="card" style="padding:8px 16px;" id="defenseList"></div>
+      </div>
+    </div>
+    <!-- EVALUATION -->
+    <div class="screen" id="screen-eval">
+      <div class="page-header" style="padding-top:calc(var(--safe-top) + 16px);">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div><div class="page-title">評価</div><div class="page-subtitle" id="evalDateLabel">日付を選択してください</div></div>
+          <button class="btn btn-primary btn-sm" onclick="saveEval()">保存</button>
+        </div>
+        <div style="margin-top:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <input type="date" id="evalDateInput" style="width:auto;flex-shrink:0;" onchange="onEvalDateChange()">
+        </div>
+        <div id="evalDateChips" style="margin-top:10px;display:flex;flex-wrap:wrap;gap:4px;"></div>
+      </div>
+      <div id="evalList" style="padding:12px 0;"></div>
+    </div>
+  </div>
+  <!-- TAB BAR -->
+  <div class="tab-bar">
+    <div class="tab-item active" id="tab-home" onclick="switchTab('home')">
+      <div class="tab-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg></div>
+      <div class="tab-label">ホーム</div>
+    </div>
+    <div class="tab-item" id="tab-members" onclick="switchTab('members')">
+      <div class="tab-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
+      <div class="tab-label">部員</div>
+    </div>
+    <div class="tab-item" id="tab-practice" onclick="switchTab('practice')">
+      <div class="tab-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+      <div class="tab-label">練習</div>
+    </div>
+    <div class="tab-item" id="tab-tactics" onclick="switchTab('tactics')">
+      <div class="tab-icon"><svg viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg></div>
+      <div class="tab-label">戦術</div>
+    </div>
+    <div class="tab-item" id="tab-eval" onclick="switchTab('eval')">
+      <div class="tab-icon"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
+      <div class="tab-label">評価</div>
+    </div>
+  </div>
+</div>
+
+<!-- MODALS -->
+<!-- Slogan Edit -->
+<div class="modal-overlay" id="sloganModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">スローガン編集</div>
+    <div class="form-group"><label class="form-label">スローガン</label><input type="text" id="sloganInput" placeholder="スローガンを入力"></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('sloganModal')">キャンセル</button>
+      <button class="btn btn-primary" onclick="saveSlogan()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- Policy Modal -->
+<div class="modal-overlay" id="policyModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="policyModalTitle">指導方針を追加</div>
+    <input type="hidden" id="policyEditId">
+    <div class="form-group"><label class="form-label">方針名</label><input type="text" id="policyName" placeholder="例：ミスの撲滅"></div>
+    <div class="form-group"><label class="form-label">詳細</label><input type="text" id="policyDetail" placeholder="例：ノッコン・SF→ゼロへ"></div>
+    <div class="form-group"><label class="form-label">タグ</label><input type="text" id="policyTag" placeholder="例：最重要"></div>
+    <div class="form-group"><label class="form-label">色</label>
+      <select id="policyColor"><option value="red">赤（最重要）</option><option value="orange">橙（重要）</option><option value="green">緑（継続）</option><option value="blue">青</option><option value="purple">紫</option></select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('policyModal')">キャンセル</button>
+      <button class="btn btn-primary" onclick="savePolicy()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- Challenge Modal -->
+<div class="modal-overlay" id="challengeModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="challengeModalTitle">課題を追加</div>
+    <input type="hidden" id="challengeEditId">
+    <div class="form-group"><label class="form-label">課題</label><input type="text" id="challengeName" placeholder="例：ノッコン"></div>
+    <div class="form-group"><label class="form-label">対策</label><input type="text" id="challengeMeasure" placeholder="例：キャッチ基礎10分/日"></div>
+    <div class="form-group"><label class="form-label">期限</label><input type="text" id="challengeDue" placeholder="例：5月末"></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('challengeModal')">キャンセル</button>
+      <button class="btn btn-primary" onclick="saveChallenge()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- Phase Modal -->
+<div class="modal-overlay" id="phaseModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="phaseModalTitle">育成計画を追加</div>
+    <input type="hidden" id="phaseEditId">
+    <div class="form-group"><label class="form-label">期間</label><input type="text" id="phasePeriod" placeholder="例：3月"></div>
+    <div class="form-group"><label class="form-label">フェーズ名</label><input type="text" id="phasePhase" placeholder="例：導入期"></div>
+    <div class="form-group"><label class="form-label">テーマ</label><input type="text" id="phaseTheme" placeholder="例：チームづくり・基礎確認"></div>
+    <div class="form-group"><label class="form-label">目標</label><input type="text" id="phaseGoal" placeholder="例：全員ルール理解"></div>
+    <div class="form-group"><label class="form-label">色</label>
+      <select id="phaseColor"><option value="green">緑</option><option value="blue">青</option><option value="purple">紫</option><option value="orange">橙</option><option value="red">赤</option></select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('phaseModal')">キャンセル</button>
+      <button class="btn btn-primary" onclick="savePhase()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- Member Modal -->
+<div class="modal-overlay" id="memberModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="memberModalTitle">部員を追加</div>
+    <input type="hidden" id="memberEditId">
+    <div class="form-group"><label class="form-label">氏名</label><input type="text" id="memberName" placeholder="例：山本 朝日"></div>
+    <div class="form-group"><label class="form-label">学年</label>
+      <select id="memberGrade"><option value="新1年">新1年</option><option value="新2年">新2年</option><option value="新3年">新3年</option><option value="新4年">新4年</option><option value="新5年">新5年</option><option value="新6年">新6年</option></select>
+    </div>
+    <div class="form-group"><label class="form-label">経験</label>
+      <select id="memberExp"><option value="初心者">初心者</option><option value="幼児経験者">幼児経験者</option><option value="1年経験">1年経験</option><option value="2年以上">2年以上</option></select>
+    </div>
+    <div class="form-group"><label class="form-label">ポジション適性</label><input type="text" id="memberPos" placeholder="例：アタック中心"></div>
+    <div class="form-group"><label class="form-label">強み</label><input type="text" id="memberStrength" placeholder="例：判断力"></div>
+    <div class="form-group"><label class="form-label">課題</label><input type="text" id="memberWeakness" placeholder="例：パスバリエーション"></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('memberModal')">キャンセル</button>
+      <button class="btn btn-primary" onclick="saveMember()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- Library Item Modal -->
+<div class="modal-overlay" id="libraryItemModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="libraryItemModalTitle">メニューを追加</div>
+    <input type="hidden" id="libEditId">
+    <div class="form-group"><label class="form-label">メニュー名</label><input type="text" id="libName" placeholder="例：キャッチドリル"></div>
+    <div class="form-group"><label class="form-label">時間（分）</label><input type="text" id="libTime" placeholder="例：15"></div>
+    <div class="form-group"><label class="form-label">区分</label>
+      <select id="libCategory">
+        <option value="集合">集合</option><option value="W-UP">W-UP</option><option value="基礎">基礎</option><option value="基礎①">基礎①</option><option value="基礎②">基礎②</option>
+        <option value="戦術">戦術</option><option value="戦術①">戦術①</option><option value="戦術②">戦術②</option><option value="実戦">実戦</option><option value="個人">個人</option><option value="整理">整理</option>
+      </select>
+    </div>
+    <div class="form-group"><label class="form-label">内容</label><textarea id="libContent" placeholder="内容を入力"></textarea></div>
+    <div class="form-group"><label class="form-label">指導のコツ</label><textarea id="libTip" placeholder="コツを入力" style="min-height:60px;"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('libraryItemModal')">キャンセル</button>
+      <button class="btn btn-primary" onclick="saveLibraryItem()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- New Practice Modal -->
+<div class="modal-overlay" id="newPracticeModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="newPracticeTitle">練習メニューを作成</div>
+    <input type="hidden" id="practiceEditId">
+    <div class="form-group"><label class="form-label">タイトル</label><input type="text" id="practiceTitle" placeholder="例：初回練習"></div>
+    <div class="form-group"><label class="form-label">日付</label><input type="date" id="practiceDate"></div>
+    <div class="form-group"><label class="form-label">メニューを選択（タップで追加）</label>
+      <div id="libPickerList" style="max-height:200px;overflow-y:auto;border:1.5px solid var(--gray-200);border-radius:10px;"></div>
+    </div>
+    <div class="form-group"><label class="form-label">選択済みメニュー（ドラッグで並べ替え）</label>
+      <div id="selectedMenuList" style="min-height:60px;border:1.5px solid var(--gray-200);border-radius:10px;padding:8px;"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('newPracticeModal')">キャンセル</button>
+      <button class="btn btn-primary" onclick="savePractice()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- Practice Detail Modal -->
+<div class="modal-overlay" id="practiceDetailModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <div class="modal-title" style="margin:0;" id="detailTitle"></div>
+      <button class="btn btn-secondary btn-sm" onclick="closeModal('practiceDetailModal')">閉じる</button>
+    </div>
+    <div id="detailDate" style="font-size:13px;color:var(--gray-500);margin-bottom:12px;"></div>
+    <button class="btn btn-primary" style="width:100%;margin-bottom:16px;font-size:17px;padding:14px;" id="timerStartBtn" onclick="startPracticeTimer()">▶ 練習スタート</button>
+    <div id="detailMenus"></div>
+  </div>
+</div>
+
+<!-- Timer Overlay -->
+<div id="timerOverlay" style="display:none;position:fixed;inset:0;z-index:500;background:#111827;flex-direction:column;align-items:center;justify-content:space-between;padding:calc(var(--safe-top)+24px) 24px calc(var(--safe-bottom)+24px);">
+  <!-- Top bar -->
+  <div style="width:100%;display:flex;align-items:center;justify-content:space-between;">
+    <button onclick="stopTimer()" style="background:rgba(255,255,255,0.1);border:none;color:white;padding:10px 16px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;">✕ 終了</button>
+    <div id="timerProgress" style="font-size:13px;color:rgba(255,255,255,0.5);font-weight:600;"></div>
+    <button onclick="skipTimer()" style="background:rgba(255,255,255,0.1);border:none;color:white;padding:10px 16px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;">スキップ ›</button>
+  </div>
+  <!-- Center -->
+  <div style="text-align:center;width:100%;">
+    <div id="timerPhaseLabel" style="font-size:13px;font-weight:700;letter-spacing:0.1em;margin-bottom:12px;"></div>
+    <div id="timerMenuName" style="font-size:24px;font-weight:800;color:white;margin-bottom:8px;line-height:1.3;"></div>
+    <div id="timerMenuCategory" style="font-size:13px;margin-bottom:40px;"></div>
+    <!-- Ring -->
+    <div style="position:relative;width:220px;height:220px;margin:0 auto 32px;">
+      <svg width="220" height="220" style="transform:rotate(-90deg)">
+        <circle cx="110" cy="110" r="100" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="12"/>
+        <circle id="timerRing" cx="110" cy="110" r="100" fill="none" stroke="#dc2626" stroke-width="12" stroke-linecap="round" stroke-dasharray="628" stroke-dashoffset="0" style="transition:stroke-dashoffset 1s linear,stroke 0.5s;"/>
+      </svg>
+      <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+        <div id="timerDisplay" style="font-size:56px;font-weight:800;color:white;letter-spacing:-2px;font-variant-numeric:tabular-nums;"></div>
+        <div id="timerTotalTime" style="font-size:13px;color:rgba(255,255,255,0.4);margin-top:4px;"></div>
+      </div>
+    </div>
+    <div id="timerTip" style="font-size:14px;color:rgba(255,255,255,0.6);line-height:1.5;min-height:32px;padding:0 8px;"></div>
+    <!-- Detail toggle -->
+    <button onclick="toggleTimerDetail()" id="timerDetailBtn" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.7);padding:8px 20px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;margin-top:10px;">メニュー詳細 ▼</button>
+    <div id="timerDetail" style="display:none;background:rgba(255,255,255,0.08);border-radius:12px;padding:14px;margin-top:10px;text-align:left;max-height:180px;overflow-y:auto;width:100%;">
+      <div id="timerDetailContent" style="font-size:13px;color:rgba(255,255,255,0.85);line-height:1.7;white-space:pre-wrap;"></div>
+    </div>
+  </div>
+  <!-- Bottom controls -->
+  <div style="width:100%;display:flex;gap:16px;">
+    <button id="timerPauseBtn" onclick="togglePause()" style="flex:1;background:rgba(255,255,255,0.1);border:none;color:white;padding:18px;border-radius:16px;font-size:20px;cursor:pointer;">⏸</button>
+    <button onclick="nextTimer()" style="flex:2;background:#dc2626;border:none;color:white;padding:18px;border-radius:16px;font-size:16px;font-weight:700;cursor:pointer;">次へ ›</button>
+  </div>
+</div>
+
+<!-- Tactic Modal -->
+<div class="modal-overlay" id="tacticModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="tacticModalTitle">戦術を追加</div>
+    <input type="hidden" id="tacticEditId">
+    <input type="hidden" id="tacticType">
+    <div class="form-group"><label class="form-label">原則名</label><input type="text" id="tacticName" placeholder="例：タテに走る"></div>
+    <div class="form-group"><label class="form-label">詳細</label><textarea id="tacticDetail" placeholder="詳細を入力" style="min-height:60px;"></textarea></div>
+    <div class="form-group"><label class="form-label">キーワード</label><input type="text" id="tacticKeyword" placeholder="例：まっすぐ行け！"></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('tacticModal')">キャンセル</button>
+      <button class="btn btn-primary" onclick="saveTactic()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">✓ 保存しました</div>
+<input type="file" id="backupImportInput" accept=".json,application/json" style="display:none;" onchange="importBackup(event)">
+
+<script>
+// ===== DATA =====
+const SKILLS = ['キャッチ','パス精度','タテ走り','ステップ','フォロー','声出し','判断力','タグ取り','ルール理解'];
+
+const DEFAULT_MEMBERS = [
+  {id:'m1',name:'山本 朝日',grade:'新2年',exp:'1年経験',pos:'アタック中心',strength:'判断力',weakness:'パスバリエーション'},
+  {id:'m2',name:'清水 開',grade:'新2年',exp:'1年経験',pos:'アタック/フォロー',strength:'走力',weakness:'ハンドリング'},
+  {id:'m3',name:'三谷 爽',grade:'新2年',exp:'1年経験',pos:'万能型',strength:'理解力',weakness:'スピード対応'},
+  {id:'m4',name:'西崎 武輝',grade:'新2年',exp:'1年経験',pos:'アタック中心',strength:'闘志',weakness:'ミス低減'},
+  {id:'m5',name:'小山 凌央',grade:'新2年',exp:'1年経験',pos:'フォロー型',strength:'献身性',weakness:'個人突破力'},
+  {id:'m6',name:'篠原 健次郎',grade:'新2年',exp:'1年経験',pos:'フォロー/守備',strength:'粘り強さ',weakness:'攻撃参加'},
+  {id:'m7',name:'中田 陽',grade:'新1年',exp:'幼児経験者',pos:'育成中',strength:'経験あり',weakness:'体格差'},
+  {id:'m8',name:'中分 理幹',grade:'新1年',exp:'幼児経験者',pos:'育成中',strength:'経験あり',weakness:'パス精度'},
+  {id:'m9',name:'〇〇（名前未定）',grade:'新1年',exp:'初心者',pos:'育成中',strength:'―',weakness:'全般基礎'},
+];
+
+const DEFAULT_POLICIES = [
+  {id:'p1',name:'ミスの撲滅',detail:'ノッコン・SF→ゼロへ',tag:'最重要',color:'red'},
+  {id:'p2',name:'パス多様化',detail:'飛ばし/スイッチ習得',tag:'重要',color:'orange'},
+  {id:'p3',name:'スピード差克服',detail:'判断速度で補う',tag:'重要',color:'orange'},
+  {id:'p4',name:'フォロー力',detail:'後ろに常に2人',tag:'重要',color:'orange'},
+  {id:'p5',name:'個人力底上げ',detail:'1対1で負けない',tag:'継続',color:'green'},
+];
+
+const DEFAULT_CHALLENGES = [
+  {id:'c1',name:'ノッコン',measure:'キャッチ基礎10分/日',due:'5月末'},
+  {id:'c2',name:'スローF',measure:'3段階パス練習',due:'6月末'},
+  {id:'c3',name:'パス単調',measure:'飛ばしパス段階導入',due:'8月末'},
+  {id:'c4',name:'個人力',measure:'ステップワーク',due:'通年'},
+  {id:'c5',name:'フォロー不足',measure:'声→足→手の徹底',due:'4月末'},
+];
+
+const DEFAULT_PHASES = [
+  {id:'ph1',period:'3月',phase:'導入期',theme:'チームづくり・基礎確認',goal:'全員ルール理解',color:'green'},
+  {id:'ph2',period:'4～5月',phase:'基礎徹底①',theme:'ハンドリング・パス精度',goal:'ノッコン1回以下',color:'blue'},
+  {id:'ph3',period:'6～7月',phase:'基礎徹底②',theme:'パスバリエーション・1対1',goal:'2種パス判断',color:'purple'},
+  {id:'ph4',period:'8～9月',phase:'実戦準備',theme:'ユニット連携・戦術',goal:'3対2成功率70%',color:'orange'},
+  {id:'ph5',period:'10～12月',phase:'大会期',theme:'総仕上げ・勝ちパターン',goal:'大会勝利！',color:'red'},
+  {id:'ph6',period:'1～3月',phase:'発展期',theme:'個人深化・次年度準備',goal:'全体レベルUP',color:'purple'},
+];
+
+const DEFAULT_LIBRARY = [
+  {id:'l1',time:'10',category:'集合',name:'挨拶・自己紹介',content:'全員で円になり名前・好きなもの発表 / コーチから今年の目標発表',tip:'1年生が緊張しないよう2年生から先に'},
+  {id:'l2',time:'5',category:'集合',name:'挨拶・今日の目標',content:'全員で今日のテーマを共有 / 前回の振り返り',tip:'ポジティブに始める'},
+  {id:'l3',time:'10',category:'W-UP',name:'鬼ごっこ系アップ',content:'①しっぽ取り鬼ごっこ（タグ兼用）5分 / ②ボール持ち鬼ごっこ 5分',tip:'タグを取る＝守備の基本'},
+  {id:'l4',time:'10',category:'W-UP',name:'タグ鬼ごっこ',content:'しっぽ取り or 氷鬼タグ版 / 楽しみながらアジリティ',tip:'全力で動く習慣'},
+  {id:'l5',time:'15',category:'基礎①',name:'キャッチドリル',content:'①コーチ投げ→両手キャッチ 5分 / ②ペア対面パス（3m→延長）5分 / ③歩きながらパス 5分',tip:'【最重要】おにぎりの手で胸の前'},
+  {id:'l6',time:'10',category:'基礎',name:'キャッチドリル（短縮版）',content:'①コーチ投げキャッチ / ②ペアパス（3m→5m）',tip:'手の形・胸の前・ノッコン撲滅'},
+  {id:'l7',time:'15',category:'基礎②',name:'パス精度ドリル',content:'①的当てパス 5分 / ②走りながら横パス（歩き→ジョグ→ラン）5分',tip:'スローフォワード防止 / 相手の胸に投げる意識'},
+  {id:'l8',time:'10',category:'基礎',name:'パスドリル（短縮版）',content:'①的当てパス / ②ランニングパス（横一列）',tip:'手首スナップ・後ろに投げる意識'},
+  {id:'l9',time:'15',category:'戦術①',name:'タテ突破ドリル',content:'①1対1タグ取り（5m四方）3分 / ②2対1（数的優位でパス判断）7分',tip:'まずタテに走るを徹底'},
+  {id:'l10',time:'15',category:'戦術②',name:'フォロー＆オフロード',content:'①3人1組フォローラン 5分 / ②タグ取られ即パス 5分 / ③3対2ミニゲーム 5分',tip:'【核心】ボールの後ろ1歩'},
+  {id:'l11',time:'10',category:'戦術',name:'フォローラン',content:'3人1組のフォロー走 / ボール→フォロー→フォロー',tip:'「後ろ1歩」の距離・声を出す'},
+  {id:'l12',time:'10',category:'戦術',name:'ユニット練習',content:'2対1→3対2 / タテ→判断→パス',tip:'タテが先！抜けたら行く'},
+  {id:'l13',time:'10',category:'個人',name:'ステップドリル',content:'①コーンジグザグ / ②1対1タグ取り',tip:'足の運び・フェイント'},
+  {id:'l14',time:'20',category:'実戦',name:'ミニゲーム（長め）',content:'4対4 or 5対4 / コート狭め（20m×12m）テンポ重視',tip:'良いプレーは即褒める'},
+  {id:'l15',time:'15',category:'実戦',name:'ミニゲーム',content:'4対4 or 5対4 / 短いコートでテンポ重視',tip:'ゲーム中に声かけ・褒める'},
+  {id:'l16',time:'10',category:'整理',name:'クールダウン・まとめ',content:'ジョグ＆ストレッチ / MVP発表・次回予告',tip:'必ずポジティブに終わる'},
+  /* ===== 追加100メニュー ===== */
+  /* --- 集合・整理 --- */
+  {id:'l17',time:'5',category:'集合',name:'振り返りサークル',content:'全員輪になり「今日よかったこと」を一言ずつ発表。コーチが最後にまとめ。',tip:'否定しない・どんな意見も拍手'},
+  {id:'l18',time:'5',category:'集合',name:'今日のテーマ宣言',content:'コーチが今日の練習テーマを1つ発表→全員で声に出して復唱×3回',tip:'シンプルに1テーマだけ。「今日はフォロー！」'},
+  {id:'l19',time:'5',category:'集合',name:'前回の振り返りクイズ',content:'「前回何を練習した？」「どんなプレーができた？」をクイズ形式で確認',tip:'正解したら全員でグータッチ'},
+  {id:'l20',time:'10',category:'集合',name:'チーム目標カード',content:'今週の個人目標を一言で決めて声に出す。コーチがメモ。次回の振り返りに使用',tip:'「〇〇を頑張る」小さな目標でOK'},
+  {id:'l21',time:'5',category:'集合',name:'MVP＆ナイスプレー発表',content:'練習中に光ったプレーをコーチが発表→みんなで称える',tip:'必ず全員が1回は呼ばれるよう記録する'},
+  {id:'l22',time:'5',category:'整理',name:'静的ストレッチ',content:'①股関節 / ②ふくらはぎ / ③肩まわり / ④体側。各10秒ずつ',tip:'ゆっくり呼吸しながら。反動をつけない'},
+  {id:'l23',time:'10',category:'整理',name:'ゲームのまとめ話し合い',content:'今日のミニゲームで良かった場面・直したい場面を子どもたち自身が発表',tip:'コーチは答えを言わず引き出す役に徹する'},
+  {id:'l24',time:'5',category:'整理',name:'次回予告＆宿題',content:'次回テーマを予告 / 自主練習できる宿題を1つだけ出す（例：毎日壁パス10回）',tip:'難しすぎない宿題。できたら褒める'},
+  /* --- ウォームアップ --- */
+  {id:'l25',time:'10',category:'W-UP',name:'色鬼ごっこ',content:'コーチが「赤！」と叫んだら近くの赤いものを触ると安全。鬼がタグを取る',tip:'瞬発力・周囲確認の習慣をつける'},
+  {id:'l26',time:'10',category:'W-UP',name:'増え鬼（タグ版）',content:'タグを取られた人が鬼になる増え鬼。最後の1人が優勝',tip:'逃げるスペース探し＝実戦のスペース認識に直結'},
+  {id:'l27',time:'10',category:'W-UP',name:'宝取りゲーム',content:'中央に置いたビブスを相手陣に運ぶ。タグを取られたら宝を返す',tip:'ボールキャリーの感覚に近い。盛り上がる'},
+  {id:'l28',time:'10',category:'W-UP',name:'手つなぎ鬼',content:'2人で手をつないだまま鬼。繋ぎながら追いかける。タグ取りに発展',tip:'コミュニケーション・連携意識が自然に育つ'},
+  {id:'l29',time:'5',category:'W-UP',name:'動的ストレッチ',content:'①腿上げジョグ / ②バック走 / ③サイドステップ / ④スキップ。各20m',tip:'本練習に向け体を温める。強度は軽めに'},
+  {id:'l30',time:'10',category:'W-UP',name:'ジョグ＆ダッシュ',content:'コート1周ジョグ→コーチの笛で直線ダッシュ×3回。ジョグに戻る',tip:'笛でリアクション＝試合中の切り替え意識'},
+  {id:'l31',time:'10',category:'W-UP',name:'ボール持ち鬼ごっこ（発展）',content:'ボールを持ちながら鬼ごっこ。タグを取られたらボールを渡す',tip:'ボール保持しながら走る感覚を楽しく習得'},
+  {id:'l32',time:'10',category:'W-UP',name:'リアクションゲーム',content:'コーチが「右」「左」「前」を言ったら素早くそちらへダッシュ→戻る×10回',tip:'判断スピード向上。ゲーム感覚で楽しく'},
+  {id:'l33',time:'10',category:'W-UP',name:'ドリブルリレー',content:'ボールを転がしながらコーンを回りリレー。落としたら戻り直し',tip:'ボールと自分の関係づくり。低学年は転がしでOK'},
+  {id:'l34',time:'10',category:'W-UP',name:'ラダードリル基礎',content:'①両足ずつ入れる / ②横向き / ③スキップ。各2往復',tip:'足を高く上げる意識。速さより正確さ優先'},
+  {id:'l35',time:'10',category:'W-UP',name:'チーム鬼ごっこ',content:'2チームに分かれ、相手チームのタグを全員取ったら勝ち',tip:'チーム戦で協力意識UP。守備の声かけが生まれる'},
+  {id:'l36',time:'5',category:'W-UP',name:'ジャンプ＆ターン',content:'①両足ジャンプ→180度回転 / ②片足ジャンプ / ③横方向ジャンプ×各10回',tip:'空中バランス感覚。楽しく体を動かす入り'},
+  /* --- 基礎（キャッチ） --- */
+  {id:'l37',time:'10',category:'基礎',name:'ボール上投げキャッチ',content:'自分でボールを上に投げて両手でキャッチ×20回。目線をボールに集中',tip:'「おにぎりの手」を毎回確認。落としてもOK'},
+  {id:'l38',time:'10',category:'基礎',name:'コーチ投げ動きながらキャッチ',content:'コーチが横に投げる→走ってキャッチ。距離を徐々に延ばす',tip:'体の前で迎えに行く意識。立ち止まらない'},
+  {id:'l39',time:'10',category:'基礎',name:'ワンバウンドキャッチ',content:'ペアで向かい合い地面に1バウンドさせてパス→キャッチ×20往復',tip:'目でボールを追う習慣。難しければ距離を縮める'},
+  {id:'l40',time:'10',category:'基礎',name:'背中合わせパス',content:'ペアで背中合わせ→体をひねってボールを渡す（左右各10回）',tip:'体幹ひねり＝パスの動作に繋がる。楽しくできる'},
+  {id:'l41',time:'15',category:'基礎',name:'3人パス（トライアングル）',content:'3人三角形に配置→時計回り・反時計回りに順番にパス×各20回',tip:'キャッチしたらすぐ次の人を見る習慣をつける'},
+  {id:'l42',time:'10',category:'基礎',name:'キャッチ競争',content:'2列に分かれてコーチ投げキャッチ。落とさずに何回続くか競争',tip:'プレッシャーの中でもキャッチできる経験を積む'},
+  {id:'l43',time:'15',category:'基礎',name:'動きながらキャッチ（長め）',content:'①歩きながら 5分 / ②ジョグしながら 5分 / ③ランしながら 5分。徐々に速度UP',tip:'速くなるにつれ体の向きと手の位置を意識させる'},
+  /* --- 基礎（パス） --- */
+  {id:'l44',time:'10',category:'基礎',name:'的当てパス',content:'5m先のコーン（的）にパスを当てる。10回中何回当てられるか',tip:'目標に向けて投げる精度向上。楽しい目標設定'},
+  {id:'l45',time:'10',category:'基礎',name:'横一列ランニングパス',content:'3人横一列で走りながら左右にパス。端まで行ったら戻る',tip:'後ろに投げる意識。前に出す=スローフォワード'},
+  {id:'l46',time:'15',category:'基礎',name:'飛ばしパス入門',content:'①隣にパス 5分 / ②1人飛ばし（スキップパス）5分 / ③確認ゲーム 5分',tip:'飛ばすときは「大きく振り抜く」。受け手は大きく声'},
+  {id:'l47',time:'15',category:'基礎',name:'スイッチパス練習',content:'向かい合って走り「スイッチ！」でボールを交換しながら位置を入れ替える',tip:'タイミングが命。声を出してから交換する'},
+  {id:'l48',time:'10',category:'基礎',name:'片手パス練習',content:'右手だけ・左手だけでパスを投げる×各15回。利き手じゃない方を重点的に',tip:'両手使えると試合の幅が広がる。最初は近距離から'},
+  {id:'l49',time:'15',category:'基礎',name:'パス＆ゴードリル',content:'パスしたら全力でパスした方向に走り続ける。次の人がフォロー',tip:'パス後に止まらない習慣！ボールを手放したら走る'},
+  {id:'l50',time:'15',category:'基礎',name:'ランニングパス（距離伸ばし）',content:'5m→8m→10mと距離を延ばしながらペアランニングパス。距離記録更新を目標に',tip:'遠くに投げるには「大きなフォロースルー」'},
+  {id:'l51',time:'20',category:'基礎',name:'キャッチ＆パス総合練習',content:'①上投げキャッチ 5分 / ②ペアパス（3→8m）5分 / ③3人トライアングル 5分 / ④的当て競争 5分',tip:'飽きないよう種目を変えながら量をこなす'},
+  {id:'l52',time:'25',category:'基礎',name:'パスドリル完全版',content:'①的当て 5分 / ②横一列ラン 5分 / ③飛ばしパス 5分 / ④スイッチ 5分 / ⑤ゲーム（パス縛り）5分',tip:'パスの種類を一通り体験させる。最後のゲームで活用'},
+  /* --- 個人技 --- */
+  {id:'l53',time:'10',category:'個人',name:'コーンジグザグ（タイム計測）',content:'10mにコーン5本設置→ジグザグに走りタイム計測。自己ベスト更新を目標に',tip:'タイムを記録することでモチベーションUP'},
+  {id:'l54',time:'10',category:'個人',name:'フットワークドリル',content:'①前後ステップ / ②左右クロスステップ / ③コーンタッチ×各30秒',tip:'足先から動く意識。かかとをつけない'},
+  {id:'l55',time:'10',category:'個人',name:'ターンスピードドリル',content:'10m走→コーン回り→戻り。左回り・右回り各5回。スピードを落とさずターン',tip:'重心を低く・内側の足で踏み込む'},
+  {id:'l56',time:'15',category:'個人',name:'ステップワーク応用',content:'①コーンジグザグ / ②フェイント1対0（鏡の前で） / ③実際に1対1でタグ取り',tip:'頭でなく体で覚える。反復が命'},
+  {id:'l57',time:'10',category:'個人',name:'スピードラダー',content:'①1マス1歩 / ②1マス2歩 / ③ラテラル（横向き）。各3往復',tip:'目は前を向く。足音が静かなほど良い動き'},
+  {id:'l58',time:'10',category:'個人',name:'体幹ドリル（子ども向け）',content:'①飛行機バランス（片足立ち）10秒×2 / ②熊歩き10m / ③カニ歩き10m',tip:'楽しいネーミングで子どもが自然に体幹を使う'},
+  {id:'l59',time:'15',category:'個人',name:'1対1タグ取り（集中練習）',content:'5m×5mの小コートで1対1×2分×5セット。攻守交替制',tip:'攻め：タテ→フェイント。守り：腰を低く・正面に入る'},
+  {id:'l60',time:'10',category:'個人',name:'リアクションダッシュ',content:'コーチの手（左右どちらかを上げる）を見てその方向にダッシュ5m→戻る×10回',tip:'見てから動くのではなく動きながら見る練習'},
+  {id:'l61',time:'15',category:'個人',name:'ボールキャリー1対1',content:'10mコートで1対1。タグ取られるまでどれだけ前進できるか距離を計測',tip:'タテに走る力を数値化。記録更新で自信に'},
+  {id:'l62',time:'20',category:'個人',name:'個人技サーキット',content:'①ジグザグ / ②ラダー / ③1対1タグ / ④キャッチ。各コーナー3分。ローテーション',tip:'飽きない工夫。4コーナー設置で人が混まない'},
+  /* --- 戦術 --- */
+  {id:'l63',time:'15',category:'戦術',name:'2対1ドリル基礎',content:'①歩きながら2対1 / ②ジョグ / ③ラン。ボール保持者がパスか突破かを判断',tip:'まずタテ！守備が詰めてきたらパス。順番を守る'},
+  {id:'l64',time:'15',category:'戦術',name:'3対2ドリル基礎',content:'3対2のシチュエーションから。タテ→パス判断→フォロー。失敗OKで繰り返す',tip:'フォロー役は常に「後ろ1歩」の距離を保つ'},
+  {id:'l65',time:'10',category:'戦術',name:'タグ取られ即パスドリル',content:'2人1組。1人がボールを持ち走る→コーチがタグを取る→即座にパス',tip:'タグを取られる前に準備する。「タグ！」で習慣化'},
+  {id:'l66',time:'10',category:'戦術',name:'ディフェンスライン練習',content:'4人横一列→コーチの笛で一斉に前進。全員が同じラインを保てるように',tip:'声で揃える。「前！」「揃えて！」の声が重要'},
+  {id:'l67',time:'10',category:'戦術',name:'マーク練習',content:'守備役がオフェンスに1対1でつく。マーク対象を離さない練習',tip:'目線：ボールでなく自分のマーク。ボールは視野の端'},
+  {id:'l68',time:'15',category:'戦術',name:'スペース突破ドリル',content:'守備のいないスペースを見つけてボールを運ぶ。コーチがスペースを指差しヒント',tip:'視野の広さがすべて。首を振る習慣をつける'},
+  {id:'l69',time:'15',category:'戦術',name:'フォロー位置確認ドリル',content:'ボール保持者が走る→フォロー役2人が正しい位置（後ろ斜め1歩）に入れているか確認',tip:'止まった状態から確認→歩き→ジョグの順で習得'},
+  {id:'l70',time:'20',category:'戦術',name:'2対1→3対2連続ドリル',content:'2対1成功→そのまま3対2へ移行。連続したシチュエーションで判断力を鍛える',tip:'前のプレーの流れを切らずに続ける意識'},
+  {id:'l71',time:'15',category:'戦術',name:'オフロードゲーム',content:'タグを取られたらその場でパスをしなければならないルールでミニゲーム',tip:'フォロー意識が一気に高まる。声を出さないとパスできない'},
+  {id:'l72',time:'20',category:'戦術',name:'ユニット連携完全版',content:'①3人フォローラン 5分 / ②タグ即パス 5分 / ③2対1→3対2連続 5分 / ④確認ゲーム 5分',tip:'各ドリルのつながりを意識させる。テーマは「止まらない」'},
+  {id:'l73',time:'15',category:'戦術',name:'ポジション別役割練習',content:'アタック：タテ走り担当 / フォロー担当 / フィニッシャーに分けて役割を固定して練習',tip:'役割を決めると子どもが動きやすい。ローテーションも行う'},
+  {id:'l74',time:'15',category:'戦術',name:'声出し連携ドリル',content:'「ここ！」「行け！」「タグ！」の3つのコールを使いながら3対2',tip:'声なしで行う→声ありで比較。声の効果を体験させる'},
+  {id:'l75',time:'25',category:'戦術',name:'タテ突破完全ドリル',content:'①1対0タテ走り / ②1対1フェイント / ③2対1判断 / ④3対2連携。各5分',tip:'1対0で型を覚え、段階的に人数を増やす'},
+  {id:'l76',time:'25',category:'戦術',name:'ディフェンス完全練習',content:'①マーク確認 / ②ライン前進 / ③タグ取り1対1 / ④2対2守備 / ⑤全員タグ取り競争',tip:'守備を楽しく。タグを取るのは「勝ち」と教える'},
+  /* --- 実戦 --- */
+  {id:'l77',time:'15',category:'実戦',name:'ミニゲーム3対3',content:'15m×10mコート。3対3。タグ5回でターンオーバー。フルスピードで',tip:'少人数で一人一人の関わりが増える'},
+  {id:'l78',time:'20',category:'実戦',name:'ミニゲーム4対4（標準）',content:'20m×12mコート。4対4。タグ5回制。コーチは実況しながら良いプレーを褒める',tip:'テンポを上げる。止まったらすぐリスタート'},
+  {id:'l79',time:'20',category:'実戦',name:'ミニゲーム5対5',content:'25m×15mコート。5対5。試合形式。審判なしで子ども同士で判断',tip:'自分たちで解決する力を育てる。コーチは見守る'},
+  {id:'l80',time:'25',category:'実戦',name:'チーム対抗ゲーム',content:'2チームに分かれて本番形式。得点記録あり。チームで作戦タイムあり（2分）',tip:'作戦タイムでコーチが「何をすれば勝てる？」と問いかける'},
+  {id:'l81',time:'15',category:'実戦',name:'制約ゲーム（パス2回以上）',content:'トライ前に必ず2回以上パスをつながないと得点にならないルール',tip:'フォロー意識・飛ばしパスが自然に生まれる'},
+  {id:'l82',time:'15',category:'実戦',name:'制約ゲーム（全員タッチ）',content:'攻撃側は全員がボールを触らないとトライできないルール',tip:'「ボールを持っていない選手が動く」意識が高まる'},
+  {id:'l83',time:'20',category:'実戦',name:'トライ取り合いゲーム',content:'タグなし・ボールを抱えてトライラインを超えるだけのシンプルゲーム。チームで点取り合戦',tip:'得点の喜びを体験させる。難しいルールなし'},
+  {id:'l84',time:'15',category:'実戦',name:'守備特化ゲーム',content:'3対4（守備多め）。守備チームがタグを何回取れるか競争。取るたびに1点',tip:'タグを取るのが楽しくなる仕掛け。守備を嫌いにさせない'},
+  {id:'l85',time:'20',category:'実戦',name:'接戦シチュエーション練習',content:'残り1分・1点差という場面設定でゲーム。コーチが演出（「残り1分！」と叫ぶ）',tip:'プレッシャー下での判断力を鍛える。楽しくシリアスに'},
+  {id:'l86',time:'30',category:'実戦',name:'試合形式練習（フル）',content:'前後半各12分のフル試合形式。タイム・審判・スコアすべて本番通り',tip:'試合経験値を積む。コーチは記録役に徹する'},
+  {id:'l87',time:'25',category:'実戦',name:'総仕上げミニゲーム',content:'今日練習したテーマを意識しながらミニゲーム。終了後に「できてたか？」確認',tip:'練習→ゲームの橋渡し。テーマを声に出してから開始'},
+  /* --- 長めバリエーション --- */
+  {id:'l88',time:'25',category:'基礎①',name:'キャッチドリル完全版',content:'①上投げキャッチ 5分 / ②コーチ投げ動きキャッチ 5分 / ③3人トライアングル 5分 / ④背中合わせ 5分 / ⑤競争 5分',tip:'飽きさせない種目変化。最後は競争で盛り上げる'},
+  {id:'l89',time:'25',category:'基礎②',name:'パス精度ドリル完全版',content:'①的当て 5分 / ②横一列ランパス 5分 / ③飛ばしパス 5分 / ④スイッチ 5分 / ⑤距離伸ばし競争 5分',tip:'最後の競争で記録更新を狙わせる'},
+  {id:'l90',time:'25',category:'W-UP',name:'ウォームアップ完全版',content:'①動的ストレッチ 5分 / ②しっぽ鬼ごっこ 5分 / ③ラダー 5分 / ④リアクションゲーム 5分 / ⑤宝取りゲーム 5分',tip:'徐々に強度を上げていく。最後は全力で'},
+  {id:'l91',time:'30',category:'実戦',name:'ミニゲーム総合（長め）',content:'3対3×10分 → 4対4×10分 → 5対5×10分。人数を増やしながら',tip:'人数が増えるにつれスペースが変わる。判断の変化を体験'},
+  {id:'l92',time:'20',category:'戦術①',name:'タテ突破＆フォロードリル（長め）',content:'①1対1タテ突破 5分 / ②2対1判断 5分 / ③フォロー確認 5分 / ④3対2連携 5分',tip:'4つのドリルを止まらず流れで行う。テンポ重視'},
+  {id:'l93',time:'20',category:'個人',name:'個人技集中練習（長め）',content:'①ジグザグタイム計測 5分 / ②ステップフェイント練習 5分 / ③1対1タグ5セット 5分 / ④振り返り 5分',tip:'個人の記録を毎回つける。成長が見える化される'},
+  {id:'l94',time:'20',category:'基礎',name:'ハンドリング総合（長め）',content:'①ボール上投げ 3分 / ②ペアパス 5分 / ③動きながらパス 5分 / ④的当て競争 5分 / ⑤確認 2分',tip:'常に「手の形・胸の前」を意識させる'},
+  {id:'l95',time:'30',category:'実戦',name:'総合練習ゲーム',content:'アップ→基礎ドリル→ミニゲームの流れをコーチなしで子どもたちが仕切る',tip:'自立心を育てる。コーチは見守り・必要時だけ介入'},
+  /* --- 試合準備・特別 --- */
+  {id:'l96',time:'15',category:'W-UP',name:'試合前アップルーティン',content:'①動的ストレッチ 3分 / ②タグ鬼ごっこ 5分 / ③パスウォームアップ 5分 / ④チームコール 2分',tip:'毎回同じルーティンにすると試合前の集中が高まる'},
+  {id:'l97',time:'10',category:'集合',name:'チームビルディングゲーム',content:'「全員でボールを繋いで何回パスできるか」記録に挑戦。声出しが命',tip:'最高記録を更新するたびに全員でハイタッチ'},
+  {id:'l98',time:'15',category:'実戦',name:'相手チーム対策練習',content:'試合で当たる相手の特徴（速い・体が大きい等）を想定したシチュエーション練習',tip:'「想定されること」をあらかじめ体験させる'},
+  {id:'l99',time:'10',category:'個人',name:'フィットネスゲーム',content:'①50m走×3本（タイム計測） / ②往復走20m×5本。タイム記録して次回と比較',tip:'体力の向上を数値で見せる。記録更新を喜ぶ'},
+  {id:'l100',time:'10',category:'W-UP',name:'楽しいボール遊び',content:'①ボールを足で蹴らない鬼ごっこ / ②ボールを使ったしりとりゲーム / ③好きなボール遊び自由時間',tip:'楽しさ優先。「ラグビー大好き」の気持ちを育てる'},
+];
+
+const DEFAULT_PRACTICES = [
+  {id:'pr1',title:'初回練習 3/29',date:'2026-03-29',menuIds:['l1','l3','l5','l7','l9','l10','l14','l16']},
+  {id:'pr2',title:'週間テンプレート',date:'',menuIds:['l2','l4','l6','l8','l13','l11','l12','l15','l16']},
+];
+
+const DEFAULT_ATTACK = [
+  {id:'a1',priority:'1st',name:'タテに走る',detail:'ボール持ったらまず前→迷わずタテ',keyword:'まっすぐ行け！'},
+  {id:'a2',priority:'2nd',name:'オフロードパス',detail:'タグ取られる直前に味方へ→止まらずつなぐ',keyword:'タグの前にパス！'},
+  {id:'a3',priority:'3rd',name:'フォロー徹底',detail:'後ろ斜め1歩→声で「ここ！」',keyword:'うしろついてるよ！'},
+  {id:'a4',priority:'4th',name:'ワンパス＋α',detail:'基本ワンパス→余裕あれば飛ばし/スイッチ',keyword:'シンプルに！'},
+];
+
+const DEFAULT_DEFENSE = [
+  {id:'d1',priority:'1st',name:'前に出る',detail:'ライン揃えて全員一歩前',keyword:'前！前！前！'},
+  {id:'d2',priority:'2nd',name:'1対1取り切る',detail:'マーク決めて離さない',keyword:'取り切れ！'},
+  {id:'d3',priority:'3rd',name:'声で連携',detail:'「右来た！」「自分行く！」',keyword:'声出せ！'},
+];
+
+const STORAGE_VERSION = 1;
+const DATA_KEYS = ['slogan','members','policies','challenges','phases','library','practices','attack','defense','evals'];
+
+// ===== STORAGE =====
+function load(key, def) {
+  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : def; } catch(e) { return def; }
+}
+function save(key, val) {
+  try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) {}
+}
+
+let data = {
+  slogan: load('slogan', '全員で前に出る、全員で獲りに行く'),
+  members: load('members', DEFAULT_MEMBERS),
+  policies: load('policies', DEFAULT_POLICIES),
+  challenges: load('challenges', DEFAULT_CHALLENGES),
+  phases: load('phases', DEFAULT_PHASES),
+  library: load('library', DEFAULT_LIBRARY),
+  practices: load('practices', DEFAULT_PRACTICES),
+  attack: load('attack', DEFAULT_ATTACK),
+  defense: load('defense', DEFAULT_DEFENSE),
+  evals: load('evals', {}),
+};
+
+function touchLastSavedAt(ts) {
+  try { localStorage.setItem('lastSavedAt', ts || new Date().toISOString()); } catch(e) {}
+}
+
+function getLastSavedAt() {
+  try { return localStorage.getItem('lastSavedAt') || ''; } catch(e) { return ''; }
+}
+
+function saveAll() {
+  DATA_KEYS.forEach(k => save(k, data[k]));
+  touchLastSavedAt();
+  renderStorageStatus();
+}
+
+// ===== UTILS =====
+function uid() { return '_' + Math.random().toString(36).substr(2,9); }
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg || '✓ 保存しました';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
+});
+
+function colorClass(c) {
+  const map = {red:'badge-red',orange:'badge-orange',green:'badge-green',blue:'badge-blue',purple:'badge-purple'};
+  return map[c] || 'badge-gray';
+}
+function colorHex(c) {
+  const map = {red:'#dc2626',orange:'#ea580c',green:'#16a34a',blue:'#2563eb',purple:'#7c3aed'};
+  return map[c] || '#6b7280';
+}
+function categoryColor(cat) {
+  const map = {'集合':'#16a34a','W-UP':'#0891b2','基礎':'#dc2626','基礎①':'#dc2626','基礎②':'#b91c1c','戦術':'#ea580c','戦術①':'#ea580c','戦術②':'#c2410c','実戦':'#7c3aed','個人':'#ca8a04','整理':'#16a34a'};
+  return map[cat] || '#6b7280';
+}
+function formatDateTime(value) {
+  if (!value) return 'まだ保存履歴がありません';
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return '保存日時を取得できません';
+  return d.toLocaleString('ja-JP', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
+function renderStorageStatus() {
+  const el = document.getElementById('storageStatus');
+  if (!el) return;
+  const memberCount = data.members.length;
+  const practiceCount = data.practices.length;
+  el.innerHTML = `最終保存: ${e(formatDateTime(getLastSavedAt()))}<br>部員 ${memberCount}名 / 練習 ${practiceCount}件 / 評価日 ${Object.keys(data.evals).length}件`;
+}
+function getBackupPayload() {
+  return {
+    app: 'tag-rugby-2026',
+    version: STORAGE_VERSION,
+    exportedAt: new Date().toISOString(),
+    data: DATA_KEYS.reduce((acc, key) => {
+      acc[key] = data[key];
+      return acc;
+    }, {})
+  };
+}
+function exportBackup() {
+  const payload = getBackupPayload();
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
+  a.href = url;
+  a.download = `tag-rugby-backup-${stamp}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('バックアップを保存しました');
+}
+function triggerImport() {
+  document.getElementById('backupImportInput').click();
+}
+function applyImportedData(nextData) {
+  DATA_KEYS.forEach(key => {
+    if (key in nextData) data[key] = nextData[key];
+  });
+  touchLastSavedAt();
+  saveAll();
+  renderAll();
+}
+function importBackup(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const parsed = JSON.parse(String(reader.result || '{}'));
+      const nextData = parsed && parsed.data ? parsed.data : parsed;
+      if (!nextData || typeof nextData !== 'object') throw new Error('invalid');
+      const hasAnyKey = DATA_KEYS.some(key => key in nextData);
+      if (!hasAnyKey) throw new Error('invalid');
+      if (!confirm('バックアップを読み込みます。現在の内容は上書きされます。よろしいですか？')) return;
+      applyImportedData(nextData);
+      showToast('バックアップを読み込みました');
+    } catch (err) {
+      showToast('❌ バックアップ読込に失敗しました');
+    } finally {
+      event.target.value = '';
+    }
+  };
+  reader.readAsText(file, 'utf-8');
+}
+function resetAppData() {
+  if (!confirm('アプリ内容を初期データに戻します。現在の内容は消えます。よろしいですか？')) return;
+  data = {
+    slogan: '全員で前に出る、全員で獲りに行く',
+    members: JSON.parse(JSON.stringify(DEFAULT_MEMBERS)),
+    policies: JSON.parse(JSON.stringify(DEFAULT_POLICIES)),
+    challenges: JSON.parse(JSON.stringify(DEFAULT_CHALLENGES)),
+    phases: JSON.parse(JSON.stringify(DEFAULT_PHASES)),
+    library: JSON.parse(JSON.stringify(DEFAULT_LIBRARY)),
+    practices: JSON.parse(JSON.stringify(DEFAULT_PRACTICES)),
+    attack: JSON.parse(JSON.stringify(DEFAULT_ATTACK)),
+    defense: JSON.parse(JSON.stringify(DEFAULT_DEFENSE)),
+    evals: {},
+  };
+  currentEvalDate = '';
+  const evalInput = document.getElementById('evalDateInput');
+  if (evalInput) evalInput.value = '';
+  saveAll();
+  renderAll();
+  showToast('初期データに戻しました');
+}
+function renderAll() {
+  renderHome();
+  renderMembers();
+  renderPractice();
+  renderTactics();
+  renderEval();
+}
+
+// ===== TAB SWITCHING =====
+let currentTab = 'home';
+function switchTab(tab) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+  document.getElementById('screen-' + tab).classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+  currentTab = tab;
+  if (tab === 'home') renderHome();
+  if (tab === 'members') renderMembers();
+  if (tab === 'practice') renderPractice();
+  if (tab === 'tactics') renderTactics();
+  if (tab === 'eval') renderEval();
+}
+
+// ===== HOME =====
+function renderHome() {
+  document.getElementById('sloganText').textContent = data.slogan;
+  updateStats();
+  renderStorageStatus();
+  renderPolicies();
+  renderChallenges();
+  renderPhases();
+}
+
+function updateStats() {
+  const total = data.members.length;
+  const y2 = data.members.filter(m => m.grade === '新2年').length;
+  const y1 = data.members.filter(m => m.grade === '新1年').length;
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('stat2nd').textContent = y2;
+  document.getElementById('stat1st').textContent = y1;
+  document.getElementById('memberCount').textContent = total + '名登録中';
+}
+
+function renderPolicies() {
+  const el = document.getElementById('policyList');
+  if (!data.policies.length) { el.innerHTML = '<div class="empty-state" style="padding:24px;"><div class="empty-state-text">方針がありません</div></div>'; return; }
+  el.innerHTML = data.policies.map((p, i) => `
+    <div class="policy-item">
+      <div class="policy-num" style="background:${colorHex(p.color)}">①</div>
+      <div class="policy-content">
+        <div style="display:flex;align-items:center;gap:6px;">
+          <div class="policy-name">${e(p.name)}</div>
+          <span class="badge ${colorClass(p.color)}">${e(p.tag)}</span>
+        </div>
+        <div class="policy-detail">${e(p.detail)}</div>
+      </div>
+      <div style="display:flex;gap:4px;">
+        <button class="btn btn-secondary btn-icon btn-sm" onclick="openPolicyModal('${p.id}')">✏️</button>
+        <button class="btn btn-secondary btn-icon btn-sm" onclick="deletePolicy('${p.id}')">🗑</button>
+      </div>
+    </div>
+  `).join('');
+  // Fix numbering
+  el.querySelectorAll('.policy-num').forEach((n, i) => { n.textContent = ['①','②','③','④','⑤','⑥','⑦','⑧','⑨','⑩'][i] || (i+1); });
+}
+
+function renderChallenges() {
+  const el = document.getElementById('challengeList');
+  if (!data.challenges.length) { el.innerHTML = '<div class="empty-state" style="padding:24px;"><div class="empty-state-text">課題がありません</div></div>'; return; }
+  el.innerHTML = data.challenges.map(c => `
+    <div class="challenge-item">
+      <div style="flex:1;">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="challenge-tag" style="color:var(--red);">▶ ${e(c.name)}</span>
+          <span style="font-size:13px;color:var(--gray-600);">${e(c.measure)}</span>
+        </div>
+        <div class="challenge-due">期限：${e(c.due)}</div>
+      </div>
+      <div style="display:flex;gap:4px;">
+        <button class="btn btn-secondary btn-icon btn-sm" onclick="openChallengeModal('${c.id}')">✏️</button>
+        <button class="btn btn-secondary btn-icon btn-sm" onclick="deleteChallenge('${c.id}')">🗑</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderPhases() {
+  const el = document.getElementById('phaseList');
+  if (!data.phases.length) { el.innerHTML = '<div class="empty-state" style="padding:24px;"><div class="empty-state-text">育成計画がありません</div></div>'; return; }
+  el.innerHTML = data.phases.map(p => `
+    <div class="phase-item">
+      <div class="phase-dot" style="background:${colorHex(p.color)};"></div>
+      <div style="flex:1;">
+        <div class="phase-period">${e(p.period)} ／ ${e(p.phase)}</div>
+        <div class="phase-theme">${e(p.theme)}</div>
+        <div class="phase-goal">目標：${e(p.goal)}</div>
+      </div>
+      <div style="display:flex;gap:4px;">
+        <button class="btn btn-secondary btn-icon btn-sm" onclick="openPhaseModal('${p.id}')">✏️</button>
+        <button class="btn btn-secondary btn-icon btn-sm" onclick="deletePhase('${p.id}')">🗑</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function e(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// Slogan
+function editSlogan() {
+  document.getElementById('sloganInput').value = data.slogan;
+  openModal('sloganModal');
+}
+function saveSlogan() {
+  data.slogan = document.getElementById('sloganInput').value.trim() || data.slogan;
+  saveAll(); renderHome(); closeModal('sloganModal'); showToast();
+}
+
+// Policy
+function openPolicyModal(id) {
+  const el = document.getElementById;
+  el('policyEditId').value = id || '';
+  el('policyModalTitle').textContent = id ? '指導方針を編集' : '指導方針を追加';
+  if (id) {
+    const p = data.policies.find(x => x.id === id);
+    el('policyName').value = p.name; el('policyDetail').value = p.detail;
+    el('policyTag').value = p.tag; el('policyColor').value = p.color;
+  } else {
+    el('policyName').value = ''; el('policyDetail').value = '';
+    el('policyTag').value = ''; el('policyColor').value = 'orange';
+  }
+  openModal('policyModal');
+}
+function savePolicy() {
+  const id = document.getElementById('policyEditId').value;
+  const obj = {
+    id: id || uid(),
+    name: document.getElementById('policyName').value.trim(),
+    detail: document.getElementById('policyDetail').value.trim(),
+    tag: document.getElementById('policyTag').value.trim(),
+    color: document.getElementById('policyColor').value,
+  };
+  if (!obj.name) return;
+  if (id) { const i = data.policies.findIndex(x => x.id === id); data.policies[i] = obj; }
+  else data.policies.push(obj);
+  saveAll(); renderPolicies(); closeModal('policyModal'); showToast();
+}
+function deletePolicy(id) {
+  if (!confirm('削除しますか？')) return;
+  data.policies = data.policies.filter(x => x.id !== id);
+  saveAll(); renderPolicies();
+}
+
+// Challenge
+function openChallengeModal(id) {
+  document.getElementById('challengeEditId').value = id || '';
+  document.getElementById('challengeModalTitle').textContent = id ? '課題を編集' : '課題を追加';
+  if (id) {
+    const c = data.challenges.find(x => x.id === id);
+    document.getElementById('challengeName').value = c.name;
+    document.getElementById('challengeMeasure').value = c.measure;
+    document.getElementById('challengeDue').value = c.due;
+  } else {
+    document.getElementById('challengeName').value = '';
+    document.getElementById('challengeMeasure').value = '';
+    document.getElementById('challengeDue').value = '';
+  }
+  openModal('challengeModal');
+}
+function saveChallenge() {
+  const id = document.getElementById('challengeEditId').value;
+  const obj = {
+    id: id || uid(),
+    name: document.getElementById('challengeName').value.trim(),
+    measure: document.getElementById('challengeMeasure').value.trim(),
+    due: document.getElementById('challengeDue').value.trim(),
+  };
+  if (!obj.name) return;
+  if (id) { const i = data.challenges.findIndex(x => x.id === id); data.challenges[i] = obj; }
+  else data.challenges.push(obj);
+  saveAll(); renderChallenges(); closeModal('challengeModal'); showToast();
+}
+function deleteChallenge(id) {
+  if (!confirm('削除しますか？')) return;
+  data.challenges = data.challenges.filter(x => x.id !== id);
+  saveAll(); renderChallenges();
+}
+
+// Phase
+function openPhaseModal(id) {
+  document.getElementById('phaseEditId').value = id || '';
+  document.getElementById('phaseModalTitle').textContent = id ? '育成計画を編集' : '育成計画を追加';
+  if (id) {
+    const p = data.phases.find(x => x.id === id);
+    document.getElementById('phasePeriod').value = p.period;
+    document.getElementById('phasePhase').value = p.phase;
+    document.getElementById('phaseTheme').value = p.theme;
+    document.getElementById('phaseGoal').value = p.goal;
+    document.getElementById('phaseColor').value = p.color;
+  } else {
+    ['phasePeriod','phasePhase','phaseTheme','phaseGoal'].forEach(x => document.getElementById(x).value = '');
+    document.getElementById('phaseColor').value = 'green';
+  }
+  openModal('phaseModal');
+}
+function savePhase() {
+  const id = document.getElementById('phaseEditId').value;
+  const obj = {
+    id: id || uid(),
+    period: document.getElementById('phasePeriod').value.trim(),
+    phase: document.getElementById('phasePhase').value.trim(),
+    theme: document.getElementById('phaseTheme').value.trim(),
+    goal: document.getElementById('phaseGoal').value.trim(),
+    color: document.getElementById('phaseColor').value,
+  };
+  if (!obj.period) return;
+  if (id) { const i = data.phases.findIndex(x => x.id === id); data.phases[i] = obj; }
+  else data.phases.push(obj);
+  saveAll(); renderPhases(); closeModal('phaseModal'); showToast();
+}
+function deletePhase(id) {
+  if (!confirm('削除しますか？')) return;
+  data.phases = data.phases.filter(x => x.id !== id);
+  saveAll(); renderPhases();
+}
+
+// ===== MEMBERS =====
+function renderMembers() {
+  updateStats();
+  const el = document.getElementById('memberList');
+  const grades = [...new Set(data.members.map(m => m.grade))].sort();
+  let html = '';
+  grades.forEach(g => {
+    const members = data.members.filter(m => m.grade === g);
+    html += `<div class="section-header"><div class="section-title">${e(g)}（${members.length}名）</div></div>`;
+    members.forEach(m => {
+      const isExp = m.exp !== '初心者';
+      const initial = m.name.charAt(0);
+      html += `
+        <div class="list-item" style="align-items:flex-start;gap:12px;">
+          <div class="member-avatar ${isExp ? 'avatar-green' : 'avatar-orange'}">${e(initial)}</div>
+          <div style="flex:1;min-width:0;">
+            <div class="member-name">${e(m.name)}</div>
+            <div class="member-meta">${e(m.grade)} · ${e(m.exp)} · ${e(m.pos)}</div>
+            <div class="member-badges">
+              ${m.strength ? `<span class="badge badge-green">◎ ${e(m.strength)}</span>` : ''}
+              ${m.weakness ? `<span class="badge badge-red">△ ${e(m.weakness)}</span>` : ''}
+            </div>
+          </div>
+          <div class="member-actions">
+            <button class="btn btn-secondary btn-icon btn-sm" onclick="openMemberModal('${m.id}')">✏️</button>
+            <button class="btn btn-secondary btn-icon btn-sm" onclick="deleteMember('${m.id}')">🗑</button>
+          </div>
+        </div>
+        <div class="divider"></div>
+      `;
+    });
+  });
+  el.innerHTML = html || '<div class="empty-state"><div class="empty-state-icon">👥</div><div class="empty-state-text">部員がいません</div></div>';
+}
+
+function openMemberModal(id) {
+  document.getElementById('memberEditId').value = id || '';
+  document.getElementById('memberModalTitle').textContent = id ? '部員を編集' : '部員を追加';
+  if (id) {
+    const m = data.members.find(x => x.id === id);
+    document.getElementById('memberName').value = m.name;
+    document.getElementById('memberGrade').value = m.grade;
+    document.getElementById('memberExp').value = m.exp;
+    document.getElementById('memberPos').value = m.pos;
+    document.getElementById('memberStrength').value = m.strength;
+    document.getElementById('memberWeakness').value = m.weakness;
+  } else {
+    ['memberName','memberPos','memberStrength','memberWeakness'].forEach(x => document.getElementById(x).value = '');
+    document.getElementById('memberGrade').value = '新1年';
+    document.getElementById('memberExp').value = '初心者';
+  }
+  openModal('memberModal');
+}
+function saveMember() {
+  const id = document.getElementById('memberEditId').value;
+  const obj = {
+    id: id || uid(),
+    name: document.getElementById('memberName').value.trim(),
+    grade: document.getElementById('memberGrade').value,
+    exp: document.getElementById('memberExp').value,
+    pos: document.getElementById('memberPos').value.trim(),
+    strength: document.getElementById('memberStrength').value.trim(),
+    weakness: document.getElementById('memberWeakness').value.trim(),
+  };
+  if (!obj.name) return;
+  if (id) { const i = data.members.findIndex(x => x.id === id); data.members[i] = obj; }
+  else data.members.push(obj);
+  saveAll(); renderMembers(); updateStats(); closeModal('memberModal'); showToast();
+}
+function deleteMember(id) {
+  if (!confirm('削除しますか？')) return;
+  data.members = data.members.filter(x => x.id !== id);
+  saveAll(); renderMembers(); updateStats();
+}
+
+// ===== PRACTICE =====
+let practiceTab = 'sessions';
+function switchPracticeTab(tab) {
+  practiceTab = tab;
+  document.querySelectorAll('#practiceSegment .segment-btn').forEach((b, i) => {
+    b.classList.toggle('active', (i === 0 && tab === 'sessions') || (i === 1 && tab === 'library'));
+  });
+  document.getElementById('practiceSessionsView').style.display = tab === 'sessions' ? '' : 'none';
+  document.getElementById('practiceLibraryView').style.display = tab === 'library' ? '' : 'none';
+}
+
+function renderPractice() {
+  renderPracticeList();
+  renderLibraryList();
+}
+
+function renderPracticeList() {
+  const el = document.getElementById('practiceList');
+  if (!data.practices.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-text">練習メニューがありません</div></div>';
+    return;
+  }
+  el.innerHTML = data.practices.map(p => {
+    const total = p.menuIds.reduce((acc, id) => {
+      const m = data.library.find(l => l.id === id);
+      return acc + (m ? parseInt(m.time) || 0 : 0);
+    }, 0);
+    return `
+      <div class="list-item" onclick="showPracticeDetail('${p.id}')">
+        <div style="flex:1;">
+          <div style="font-size:16px;font-weight:700;">${e(p.title)}</div>
+          <div style="font-size:13px;color:var(--gray-500);margin-top:2px;">${p.date || '日付なし'} · ${p.menuIds.length}メニュー · 計${total}分</div>
+        </div>
+        <div style="display:flex;gap:4px;">
+          <button class="btn btn-secondary btn-icon btn-sm" onclick="event.stopPropagation();openEditPracticeModal('${p.id}')">✏️</button>
+          <button class="btn btn-secondary btn-icon btn-sm" onclick="event.stopPropagation();deletePractice('${p.id}')">🗑</button>
+        </div>
+      </div>
+      <div class="divider"></div>
+    `;
+  }).join('');
+}
+
+function renderLibraryList() {
+  const el = document.getElementById('libraryList');
+  if (!data.library.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📚</div><div class="empty-state-text">メニューがありません</div></div>';
+    return;
+  }
+  el.innerHTML = data.library.map(m => `
+    <div class="list-item" style="align-items:flex-start;">
+      <div style="flex:1;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span class="menu-badge" style="background:${categoryColor(m.category)}22;color:${categoryColor(m.category)}">${e(m.category)}</span>
+          <span style="font-size:15px;font-weight:700;">${e(m.name)}</span>
+          <span class="menu-time">${e(m.time)}分</span>
+        </div>
+        <div class="menu-desc">${e(m.content)}</div>
+        ${m.tip ? `<div style="font-size:12px;color:var(--orange);margin-top:2px;">💡 ${e(m.tip)}</div>` : ''}
+      </div>
+      <div style="display:flex;gap:4px;">
+        <button class="btn btn-secondary btn-icon btn-sm" onclick="openLibraryItemModal('${m.id}')">✏️</button>
+        <button class="btn btn-secondary btn-icon btn-sm" onclick="deleteLibraryItem('${m.id}')">🗑</button>
+      </div>
+    </div>
+    <div class="divider"></div>
+  `).join('');
+}
+
+// Library Item
+function openLibraryItemModal(id) {
+  document.getElementById('libEditId').value = id || '';
+  document.getElementById('libraryItemModalTitle').textContent = id ? 'メニューを編集' : 'メニューを追加';
+  if (id) {
+    const m = data.library.find(x => x.id === id);
+    document.getElementById('libName').value = m.name;
+    document.getElementById('libTime').value = m.time;
+    document.getElementById('libCategory').value = m.category;
+    document.getElementById('libContent').value = m.content;
+    document.getElementById('libTip').value = m.tip;
+  } else {
+    ['libName','libTime','libContent','libTip'].forEach(x => document.getElementById(x).value = '');
+    document.getElementById('libCategory').value = '基礎';
+  }
+  openModal('libraryItemModal');
+}
+function saveLibraryItem() {
+  const id = document.getElementById('libEditId').value;
+  const obj = {
+    id: id || uid(),
+    name: document.getElementById('libName').value.trim(),
+    time: document.getElementById('libTime').value.trim(),
+    category: document.getElementById('libCategory').value,
+    content: document.getElementById('libContent').value.trim(),
+    tip: document.getElementById('libTip').value.trim(),
+  };
+  if (!obj.name) return;
+  if (id) { const i = data.library.findIndex(x => x.id === id); data.library[i] = obj; }
+  else data.library.push(obj);
+  saveAll(); renderLibraryList(); closeModal('libraryItemModal'); showToast();
+}
+function deleteLibraryItem(id) {
+  if (!confirm('削除しますか？')) return;
+  data.library = data.library.filter(x => x.id !== id);
+  saveAll(); renderLibraryList();
+}
+
+// Practice Create/Edit
+let selectedMenuIds = [];
+function openNewPracticeModal(editId) {
+  document.getElementById('practiceEditId').value = editId || '';
+  document.getElementById('newPracticeTitle').textContent = editId ? '練習メニューを編集' : '練習メニューを作成';
+  if (editId) {
+    const p = data.practices.find(x => x.id === editId);
+    document.getElementById('practiceTitle').value = p.title;
+    document.getElementById('practiceDate').value = p.date;
+    selectedMenuIds = [...p.menuIds];
+  } else {
+    document.getElementById('practiceTitle').value = '';
+    document.getElementById('practiceDate').value = '';
+    selectedMenuIds = [];
+  }
+  renderLibPicker();
+  renderSelectedMenus();
+  openModal('newPracticeModal');
+}
+function openEditPracticeModal(id) { openNewPracticeModal(id); }
+
+function renderLibPicker() {
+  const el = document.getElementById('libPickerList');
+  el.innerHTML = data.library.map(m => `
+    <div class="list-item" style="padding:8px 12px;cursor:pointer;" onclick="toggleMenuSelect('${m.id}')">
+      <div style="flex:1;">
+        <span class="menu-badge" style="background:${categoryColor(m.category)}22;color:${categoryColor(m.category)};margin-right:6px;">${e(m.category)}</span>
+        <span style="font-size:14px;font-weight:600;">${e(m.name)}</span>
+        <span class="menu-time" style="margin-left:6px;">${e(m.time)}分</span>
+      </div>
+      <div id="pick_${m.id}" class="library-check ${selectedMenuIds.includes(m.id) ? 'checked' : ''}">
+        ${selectedMenuIds.includes(m.id) ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>' : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleMenuSelect(id) {
+  const idx = selectedMenuIds.indexOf(id);
+  if (idx === -1) selectedMenuIds.push(id);
+  else selectedMenuIds.splice(idx, 1);
+  renderLibPicker();
+  renderSelectedMenus();
+}
+
+function renderSelectedMenus() {
+  const el = document.getElementById('selectedMenuList');
+  if (!selectedMenuIds.length) { el.innerHTML = '<div style="font-size:13px;color:var(--gray-400);text-align:center;padding:12px;">メニューを選択してください</div>'; return; }
+  el.innerHTML = selectedMenuIds.map((id, i) => {
+    const m = data.library.find(l => l.id === id);
+    if (!m) return '';
+    return `
+      <div style="display:flex;align-items:center;gap:8px;padding:6px 4px;border-bottom:1px solid var(--gray-100);">
+        <div class="practice-order">${i+1}</div>
+        <div style="flex:1;font-size:14px;font-weight:600;">${e(m.name)}<span class="menu-time" style="margin-left:6px;">${e(m.time)}分</span></div>
+        <button class="btn btn-secondary btn-icon btn-sm" onclick="removeSelectedMenu('${id}')">✕</button>
+      </div>
+    `;
+  }).join('');
+}
+
+function removeSelectedMenu(id) {
+  selectedMenuIds = selectedMenuIds.filter(x => x !== id);
+  renderLibPicker();
+  renderSelectedMenus();
+}
+
+function savePractice() {
+  const editId = document.getElementById('practiceEditId').value;
+  const obj = {
+    id: editId || uid(),
+    title: document.getElementById('practiceTitle').value.trim(),
+    date: document.getElementById('practiceDate').value,
+    menuIds: [...selectedMenuIds],
+  };
+  if (!obj.title) return;
+  if (editId) { const i = data.practices.findIndex(x => x.id === editId); data.practices[i] = obj; }
+  else data.practices.push(obj);
+  saveAll(); renderPracticeList(); closeModal('newPracticeModal'); showToast();
+}
+
+function deletePractice(id) {
+  if (!confirm('削除しますか？')) return;
+  data.practices = data.practices.filter(x => x.id !== id);
+  saveAll(); renderPracticeList();
+}
+
+function showPracticeDetail(id) {
+  const p = data.practices.find(x => x.id === id);
+  if (!p) return;
+  currentDetailPracticeId = id;
+  document.getElementById('detailTitle').textContent = p.title;
+  document.getElementById('detailDate').textContent = p.date ? '📅 ' + p.date : '日付なし';
+  let total = 0;
+  const html = p.menuIds.map((mid, i) => {
+    const m = data.library.find(l => l.id === mid);
+    if (!m) return '';
+    total += parseInt(m.time) || 0;
+    return `
+      <div class="practice-menu-row">
+        <div class="practice-order">${i+1}</div>
+        <div class="menu-content">
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+            <span class="menu-badge" style="background:${categoryColor(m.category)}22;color:${categoryColor(m.category)}">${e(m.category)}</span>
+            <span style="font-size:15px;font-weight:700;">${e(m.name)}</span>
+            <span class="menu-time">${e(m.time)}分</span>
+          </div>
+          <div class="menu-desc" style="margin-top:4px;">${e(m.content)}</div>
+          ${m.tip ? `<div style="font-size:12px;color:var(--orange);margin-top:2px;">💡 ${e(m.tip)}</div>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+  document.getElementById('detailMenus').innerHTML = html + `<div style="text-align:right;font-size:13px;font-weight:700;color:var(--gray-500);margin-top:12px;">合計 ${total}分</div>`;
+  openModal('practiceDetailModal');
+}
+
+// ===== TACTICS =====
+let tacticsTab = 'attack';
+function switchTacticsTab(tab) {
+  tacticsTab = tab;
+  document.querySelectorAll('#tacticsSegment .segment-btn').forEach((b, i) => {
+    b.classList.toggle('active', (i === 0 && tab === 'attack') || (i === 1 && tab === 'defense'));
+  });
+  document.getElementById('attackView').style.display = tab === 'attack' ? '' : 'none';
+  document.getElementById('defenseView').style.display = tab === 'defense' ? '' : 'none';
+}
+
+function renderTactics() {
+  renderAttack();
+  renderDefense();
+}
+
+function renderAttack() {
+  const el = document.getElementById('attackList');
+  if (!data.attack.length) { el.innerHTML = '<div class="empty-state" style="padding:24px;"><div class="empty-state-text">戦術がありません</div></div>'; return; }
+  el.innerHTML = data.attack.map(t => `
+    <div class="tactic-item">
+      <div class="tactic-priority">${e(t.priority)}</div>
+      <div class="tactic-content">
+        <div class="tactic-name">${e(t.name)}</div>
+        <div class="tactic-detail">${e(t.detail)}</div>
+        <div class="tactic-keyword">🗣 ${e(t.keyword)}</div>
+      </div>
+      <div style="display:flex;gap:4px;">
+        <button class="btn btn-secondary btn-icon btn-sm" onclick="openTacticModal('attack','${t.id}')">✏️</button>
+        <button class="btn btn-secondary btn-icon btn-sm" onclick="deleteTactic('attack','${t.id}')">🗑</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderDefense() {
+  const el = document.getElementById('defenseList');
+  if (!data.defense.length) { el.innerHTML = '<div class="empty-state" style="padding:24px;"><div class="empty-state-text">戦術がありません</div></div>'; return; }
+  el.innerHTML = data.defense.map(t => `
+    <div class="tactic-item tactic-def">
+      <div class="tactic-priority" style="background:var(--blue);">${e(t.priority)}</div>
+      <div class="tactic-content">
+        <div class="tactic-name">${e(t.name)}</div>
+        <div class="tactic-detail">${e(t.detail)}</div>
+        <div class="tactic-keyword" style="color:var(--blue);">🗣 ${e(t.keyword)}</div>
+      </div>
+      <div style="display:flex;gap:4px;">
+        <button class="btn btn-secondary btn-icon btn-sm" onclick="openTacticModal('defense','${t.id}')">✏️</button>
+        <button class="btn btn-secondary btn-icon btn-sm" onclick="deleteTactic('defense','${t.id}')">🗑</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openTacticModal(type, id) {
+  document.getElementById('tacticEditId').value = id || '';
+  document.getElementById('tacticType').value = type;
+  document.getElementById('tacticModalTitle').textContent = id ? '戦術を編集' : '戦術を追加';
+  if (id) {
+    const arr = type === 'attack' ? data.attack : data.defense;
+    const t = arr.find(x => x.id === id);
+    document.getElementById('tacticName').value = t.name;
+    document.getElementById('tacticDetail').value = t.detail;
+    document.getElementById('tacticKeyword').value = t.keyword;
+  } else {
+    ['tacticName','tacticDetail','tacticKeyword'].forEach(x => document.getElementById(x).value = '');
+  }
+  openModal('tacticModal');
+}
+function saveTactic() {
+  const id = document.getElementById('tacticEditId').value;
+  const type = document.getElementById('tacticType').value;
+  const arr = type === 'attack' ? data.attack : data.defense;
+  const prios = ['1st','2nd','3rd','4th','5th','6th'];
+  const obj = {
+    id: id || uid(),
+    priority: id ? arr.find(x=>x.id===id).priority : (prios[arr.length] || (arr.length+1)+'th'),
+    name: document.getElementById('tacticName').value.trim(),
+    detail: document.getElementById('tacticDetail').value.trim(),
+    keyword: document.getElementById('tacticKeyword').value.trim(),
+  };
+  if (!obj.name) return;
+  if (id) { const i = arr.findIndex(x => x.id === id); arr[i] = obj; }
+  else arr.push(obj);
+  if (type === 'attack') data.attack = arr; else data.defense = arr;
+  saveAll(); renderTactics(); closeModal('tacticModal'); showToast();
+}
+function deleteTactic(type, id) {
+  if (!confirm('削除しますか？')) return;
+  if (type === 'attack') data.attack = data.attack.filter(x => x.id !== id);
+  else data.defense = data.defense.filter(x => x.id !== id);
+  saveAll(); renderTactics();
+}
+
+// ===== EVAL =====
+let currentEvalDate = '';
+function renderEval() {
+  updateEvalDateChips();
+  renderEvalPlayers();
+}
+
+function onEvalDateChange() {
+  currentEvalDate = document.getElementById('evalDateInput').value;
+  document.getElementById('evalDateLabel').textContent = currentEvalDate || '日付を選択してください';
+  updateEvalDateChips();
+  renderEvalPlayers();
+}
+
+function updateEvalDateChips() {
+  const dates = Object.keys(data.evals).sort().reverse();
+  const el = document.getElementById('evalDateChips');
+  el.innerHTML = dates.map(d => `
+    <div class="date-chip ${d === currentEvalDate ? 'active' : ''}" onclick="selectEvalDate('${d}')">${d}</div>
+  `).join('') || '<div style="font-size:13px;color:var(--gray-400);">保存済みの評価はありません</div>';
+}
+
+function selectEvalDate(d) {
+  currentEvalDate = d;
+  document.getElementById('evalDateInput').value = d;
+  document.getElementById('evalDateLabel').textContent = d;
+  updateEvalDateChips();
+  renderEvalPlayers();
+}
+
+function renderEvalPlayers() {
+  const el = document.getElementById('evalList');
+  if (!data.members.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📊</div><div class="empty-state-text">部員タブから部員を追加してください</div></div>';
+    return;
+  }
+  const evalData = currentEvalDate && data.evals[currentEvalDate] ? data.evals[currentEvalDate] : {};
+  el.innerHTML = data.members.map((m, mi) => {
+    const playerEval = evalData[m.id] || {};
+    const skillsHtml = SKILLS.map(skill => {
+      const val = playerEval.skills ? (playerEval.skills[skill] || 0) : 0;
+      const sid = `stars_${m.id}_${skill}`;
+      const stars = [1,2,3,4,5].map(n => `<div class="star ${val>=n?'active':''}" onclick="setSkill('${m.id}','${e(skill)}',${n})">${val>=n?'★':'☆'}</div>`).join('');
+      return `
+        <div class="skill-row">
+          <div class="skill-name">${e(skill)}</div>
+          <div class="stars" id="${sid}">${stars}</div>
+        </div>
+      `;
+    }).join('');
+    const initial = m.name.charAt(0);
+    const isExp = m.exp !== '初心者';
+    return `
+      <div class="eval-player">
+        <div class="eval-player-header" onclick="openEvalPlayer('ep_${m.id}')">
+          <div class="member-avatar ${isExp?'avatar-green':'avatar-orange'}" style="width:36px;height:36px;font-size:14px;">${e(initial)}</div>
+          <div style="flex:1;">
+            <div style="font-size:16px;font-weight:700;">${e(m.name)}</div>
+            <div style="font-size:12px;color:var(--gray-500);">${e(m.grade)} · ${e(m.exp)}</div>
+          </div>
+          <div style="font-size:20px;color:var(--gray-400);">›</div>
+        </div>
+        <div class="eval-player-body" id="ep_${m.id}">
+          ${skillsHtml}
+          <div class="form-group" style="margin-top:12px;">
+            <label class="form-label">メモ（気づき・改善点）</label>
+            <textarea id="memo_${m.id}" placeholder="メモを入力..." style="min-height:60px;">${e(playerEval.memo || '')}</textarea>
+          </div>
+          <button class="btn btn-secondary" style="width:100%;margin-top:8px;" onclick="closeEvalPlayer('ep_${m.id}')">閉じる</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function openEvalPlayer(id) {
+  const el = document.getElementById(id);
+  if (!el.classList.contains('open')) el.classList.add('open');
+}
+
+function closeEvalPlayer(id) {
+  const el = document.getElementById(id);
+  el.classList.remove('open');
+}
+
+function setSkill(memberId, skill, val) {
+  if (!currentEvalDate) { showToast('❌ 日付を選択してください'); return; }
+  if (!data.evals[currentEvalDate]) data.evals[currentEvalDate] = {};
+  if (!data.evals[currentEvalDate][memberId]) data.evals[currentEvalDate][memberId] = {skills:{},memo:''};
+  if (!data.evals[currentEvalDate][memberId].skills) data.evals[currentEvalDate][memberId].skills = {};
+  const cur = data.evals[currentEvalDate][memberId].skills[skill] || 0;
+  const newVal = cur === val ? 0 : val;
+  data.evals[currentEvalDate][memberId].skills[skill] = newVal;
+  saveAll();
+  // 星だけ更新（アコーディオンを閉じない）
+  const container = document.getElementById(`stars_${memberId}_${skill}`);
+  if (container) {
+    container.querySelectorAll('.star').forEach((s, i) => {
+      const n = i + 1;
+      s.classList.toggle('active', newVal >= n);
+      s.textContent = newVal >= n ? '★' : '☆';
+    });
+  }
+}
+
+function saveEval() {
+  if (!currentEvalDate) { showToast('❌ 日付を選択してください'); return; }
+  if (!data.evals[currentEvalDate]) data.evals[currentEvalDate] = {};
+  data.members.forEach(m => {
+    const memoEl = document.getElementById('memo_' + m.id);
+    if (memoEl) {
+      if (!data.evals[currentEvalDate][m.id]) data.evals[currentEvalDate][m.id] = {skills:{},memo:''};
+      data.evals[currentEvalDate][m.id].memo = memoEl.value;
+    }
+  });
+  saveAll(); updateEvalDateChips(); showToast();
+}
+
+// ===== TIMER =====
+const BREAK_SECS = 180; // 3分
+let timerState = null; // {steps, stepIndex, totalSecs, remainSecs, isPaused, intervalId}
+
+function buildTimerSteps(practice) {
+  const steps = [];
+  practice.menuIds.forEach((mid, i) => {
+    const m = data.library.find(l => l.id === mid);
+    if (!m) return;
+    steps.push({type:'menu', menu:m, secs: (parseInt(m.time)||5)*60});
+    if (i < practice.menuIds.length - 1) {
+      steps.push({type:'break', secs: BREAK_SECS});
+    }
+  });
+  return steps;
+}
+
+let currentDetailPracticeId = '';
+function startPracticeTimer() {
+  const p = data.practices.find(x => x.id === currentDetailPracticeId);
+  if (!p || !p.menuIds.length) { showToast('メニューがありません'); return; }
+  closeModal('practiceDetailModal');
+  const steps = buildTimerSteps(p);
+  timerState = {steps, stepIndex:0, isPaused:false, intervalId:null};
+  showTimerOverlay();
+  loadStep(0);
+  tickTimer();
+}
+
+function showTimerOverlay() {
+  const el = document.getElementById('timerOverlay');
+  el.style.display = 'flex';
+}
+
+function hideTimerOverlay() {
+  const el = document.getElementById('timerOverlay');
+  el.style.display = 'none';
+}
+
+function loadStep(idx) {
+  const s = timerState;
+  const step = s.steps[idx];
+  s.stepIndex = idx;
+  s.remainSecs = step.secs;
+  s.totalSecs = step.secs;
+  updateTimerUI();
+}
+
+function updateTimerUI() {
+  const s = timerState;
+  const step = s.steps[s.stepIndex];
+  const menuSteps = s.steps.filter(x=>x.type==='menu');
+  const menuIdx = s.steps.slice(0, s.stepIndex+1).filter(x=>x.type==='menu').length;
+
+  // Progress
+  document.getElementById('timerProgress').textContent = `${menuIdx} / ${menuSteps.length}`;
+
+  // Phase label & colors
+  const isBreak = step.type === 'break';
+  const accent = isBreak ? '#0891b2' : '#dc2626';
+  document.getElementById('timerRing').style.stroke = accent;
+  document.getElementById('timerPhaseLabel').textContent = isBreak ? '💧 休憩' : '🏉 練習中';
+  document.getElementById('timerPhaseLabel').style.color = isBreak ? '#0891b2' : '#dc2626';
+
+  if (isBreak) {
+    const nextMenu = s.steps.slice(s.stepIndex+1).find(x=>x.type==='menu');
+    document.getElementById('timerMenuName').textContent = '休憩タイム';
+    document.getElementById('timerMenuCategory').textContent = nextMenu ? `次：${nextMenu.menu.name}` : '最後の休憩';
+    document.getElementById('timerMenuCategory').style.color = 'rgba(255,255,255,0.5)';
+    document.getElementById('timerTip').textContent = '水分補給・呼吸を整えよう';
+    document.getElementById('timerDetailContent').textContent = nextMenu
+      ? `【次のメニュー】${nextMenu.menu.name}\n\n${nextMenu.menu.content}\n\n💡 ${nextMenu.menu.tip}`
+      : '練習終了です。よく頑張りました！';
+  } else {
+    const m = step.menu;
+    document.getElementById('timerMenuName').textContent = m.name;
+    document.getElementById('timerMenuCategory').textContent = m.category + '  ' + m.time + '分';
+    document.getElementById('timerMenuCategory').style.color = categoryColor(m.category);
+    document.getElementById('timerTip').textContent = m.tip ? '💡 ' + m.tip : '';
+    document.getElementById('timerDetailContent').textContent = m.content + (m.tip ? '\n\n💡 ' + m.tip : '');
+  }
+
+  updateTimerDisplay();
+}
+
+function toggleTimerDetail() {
+  const panel = document.getElementById('timerDetail');
+  const btn = document.getElementById('timerDetailBtn');
+  const isOpen = panel.style.display !== 'none';
+  panel.style.display = isOpen ? 'none' : 'block';
+  btn.textContent = isOpen ? 'メニュー詳細 ▼' : 'メニュー詳細 ▲';
+}
+
+function updateTimerDisplay() {
+  const s = timerState;
+  const rem = Math.max(0, s.remainSecs);
+  const min = Math.floor(rem / 60);
+  const sec = rem % 60;
+  document.getElementById('timerDisplay').textContent = `${String(min).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+  document.getElementById('timerTotalTime').textContent = `/ ${Math.floor(s.totalSecs/60).toString().padStart(2,'0')}:${String(s.totalSecs%60).padStart(2,'0')}`;
+
+  // Ring
+  const ratio = s.totalSecs > 0 ? rem / s.totalSecs : 0;
+  const circumference = 628;
+  document.getElementById('timerRing').style.strokeDashoffset = circumference * (1 - ratio);
+}
+
+function tickTimer() {
+  if (timerState.intervalId) clearInterval(timerState.intervalId);
+  timerState.intervalId = setInterval(() => {
+    if (timerState.isPaused) return;
+    timerState.remainSecs--;
+    updateTimerDisplay();
+    if (timerState.remainSecs <= 0) {
+      // vibrate if supported
+      if (navigator.vibrate) navigator.vibrate([300,100,300]);
+      nextTimer();
+    }
+  }, 1000);
+}
+
+function nextTimer() {
+  const s = timerState;
+  const nextIdx = s.stepIndex + 1;
+  if (nextIdx >= s.steps.length) {
+    finishTimer();
+    return;
+  }
+  loadStep(nextIdx);
+}
+
+function skipTimer() { nextTimer(); }
+
+function togglePause() {
+  timerState.isPaused = !timerState.isPaused;
+  document.getElementById('timerPauseBtn').textContent = timerState.isPaused ? '▶' : '⏸';
+}
+
+function stopTimer() {
+  if (!confirm('練習を終了しますか？')) return;
+  if (timerState && timerState.intervalId) clearInterval(timerState.intervalId);
+  timerState = null;
+  hideTimerOverlay();
+}
+
+function finishTimer() {
+  if (timerState && timerState.intervalId) clearInterval(timerState.intervalId);
+  timerState = null;
+  hideTimerOverlay();
+  showToast('🎉 練習完了！お疲れ様でした！');
+}
+
+// ===== INIT =====
+renderAll();
+</script>
+</body>
+</html>
